@@ -7,7 +7,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(libsodium_dir ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libsodium/)
+set(libsodium_dir ${CMAKE_CURRENT_SOURCE_DIR}/third-party/libsodium/)
 
 if(WIN32)
   if(${MSVC_TOOLSET_VERSION} MATCHES 142)
@@ -110,14 +110,14 @@ add_library(${PROJECT_NAME} STATIC
   src/privatekey.cpp
   )
 
+add_subdirectory(third-party)
+
 target_link_libraries (${PROJECT_NAME} blake2 libsodium)
 target_compile_definitions(${PROJECT_NAME} PUBLIC SODIUM_STATIC)
 if(WIN32)
   target_compile_options(${PROJECT_NAME} PUBLIC /wd4324)
 endif()
   
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
+target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../third-party/blake2/sse
-	${CMAKE_CURRENT_SOURCE_DIR}/../third-party/libsodium/src/libsodium/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/third-party/libsodium/src/libsodium/include)
