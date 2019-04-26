@@ -1,0 +1,6 @@
+[submodule "third-party/blake2"]
+	path = third-party/blake2
+	url = https://gitlab.com/credits_bc/third_party/blake2.git
+[submodule "third-party/libsodium"]
+	path = third-party/libsodium
+	url = https://github.com/jedisct1/libsodium.git
