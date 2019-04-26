@@ -1,7 +1,7 @@
 set(libsodium_dir ${CMAKE_CURRENT_SOURCE_DIR}/libsodium/)
 
 if(WIN32)
-  if(${MSVC_TOOLSET_VERSION} MATCHES 142)
+  if(${MSVC_TOOLSET_VERSION} MATCHES 142 OR NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.20)
     set(libsodium_patch ${libsodium_dir}/../patches/msvc142_retargeting.patch)
   else()
     if(${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION} MATCHES 10.0.17763.0)
