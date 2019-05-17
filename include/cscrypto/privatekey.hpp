@@ -26,9 +26,9 @@ public:
     }
 
     static PrivateKey readFromBytes(const Bytes&);
-    static PrivateKey readFromEncrypted(const Bytes&, const char* passwd);
+    static PrivateKey readFromEncrypted(const Bytes&, const char* passwd, size_t pswdLen);
 
-    Bytes getEncrypted(const char* passwd) const;
+    Bytes getEncrypted(const char* passwd, size_t pswdLen) const;
     static PrivateKey generateWithPair(PublicKey&);
 
 private:

@@ -54,11 +54,11 @@ PrivateKey PrivateKey::generateWithPair(PublicKey& public_key) {
     return result;
 }
 
-static auto getKeyFromPassword(const char* passwd) {
+static auto getKeyFromPassword(const char* passwd, size_t pswdLen) {
     MemGuard<Byte, crypto_aead_chacha20poly1305_KEYBYTES> key;
     const static std::array<Byte, crypto_pwhash_SALTBYTES> salt = {73, 68, 73, 32, 78, 65, 72, 85, 89, 32, 66, 76, 89, 65, 84, 39};
 
-    if (crypto_pwhash(key.data(), key.size(), passwd, std::strlen(passwd), salt.data(), crypto_pwhash_OPSLIMIT_SENSITIVE, crypto_pwhash_MEMLIMIT_SENSITIVE,
+    if (crypto_pwhash(key.data(), key.size(), passwd, pswdLen, salt.data(), crypto_pwhash_OPSLIMIT_SENSITIVE, crypto_pwhash_MEMLIMIT_SENSITIVE,
                       crypto_pwhash_ALG_DEFAULT) != 0) {
         key.clear();
     }
@@ -77,7 +77,7 @@ PrivateKey PrivateKey::readFromBytes(const Bytes& bytes) {
     return result;
 }
 
-PrivateKey PrivateKey::readFromEncrypted(const Bytes& bytes, const char* passwd) {
+PrivateKey PrivateKey::readFromEncrypted(const Bytes& bytes, const char* passwd, size_t pswdLen) {
     if (bytes.size() < crypto_aead_chacha20poly1305_NPUBBYTES)
         return PrivateKey();
 
@@ -85,7 +85,7 @@ PrivateKey PrivateKey::readFromEncrypted(const Bytes& bytes, const char* passwd)
     memcpy(nonce.data(), bytes.data(), crypto_aead_chacha20poly1305_NPUBBYTES);
 
     // Hash the password
-    auto key = getKeyFromPassword(passwd);
+    auto key = getKeyFromPassword(passwd, pswdLen);
 
     PrivateKey result;
     result.mem_ = sodium_malloc(kPrivateKeySize);
@@ -101,10 +101,10 @@ PrivateKey PrivateKey::readFromEncrypted(const Bytes& bytes, const char* passwd)
     return result;
 }
 
-Bytes PrivateKey::getEncrypted(const char* passwd) const {
+Bytes PrivateKey::getEncrypted(const char* passwd, size_t pswdLen) const {
     Bytes result;
 
-    auto key = getKeyFromPassword(passwd);
+    auto key = getKeyFromPassword(passwd, pswdLen);
     auto pk = access();
 
     Byte cText[kPrivateKeySize + crypto_aead_chacha20poly1305_ABYTES];
@@ -125,5 +125,4 @@ Bytes PrivateKey::getEncrypted(const char* passwd) const {
 
     return result;
 }
-
 }  // namespace cscrypto
