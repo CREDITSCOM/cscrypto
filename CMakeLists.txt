@@ -14,9 +14,10 @@ add_library(${PROJECT_NAME} STATIC
   include/cscrypto/privatekey.hpp
   include/cscrypto/cryptoconstants.hpp
   include/cscrypto/maincryptofunctions.hpp
+  include/cscrypto/keysderivation.hpp
   src/maincryptofunctions.cpp
   src/privatekey.cpp
-  )
+  src/keysderivation.cpp)
 
 add_subdirectory(third-party)
 
