@@ -74,3 +74,4 @@ set_property(TARGET libsodium PROPERTY IMPORTED_LOCATION_RELWALLET
              ${libsodium_dir}/Build/Release/x64/${lb_lib_folder}/libsodium${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 add_subdirectory(blake2)
+add_subdirectory(base58)
