@@ -6,9 +6,10 @@
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4324 4244 4267 4804)  // 'crypto_generichash_blake2b_state': structure was padded due to alignment specifier,
-                                                // convertion from uin64_t to uin32_t, convertion from size_t to uint8_t
 #endif
+
 #include <sodium.h>
+
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
@@ -27,7 +28,7 @@ public:
     MemGuard& operator=(MemGuard&&);
 
     MemGuard(const MemGuard&) = delete;
-    MemGuard& operator=(const MemGuard&);
+    MemGuard& operator=(const MemGuard&) = delete;
 
     T* data() {
         return mem_;
@@ -41,6 +42,7 @@ public:
     }
 
     void clear();
+
     operator bool() const {
         return mem_;
     }
@@ -90,21 +92,18 @@ template <typename T, std::size_t Size>
 MemGuard<T, Size>::MemGuard(MemGuard&& rhs) {
     if (rhs.mem_ != mem_) {
         clear();
+        mem_ = rhs.mem_;
+        rhs.mem_ = nullptr;
     }
-
-    mem_ = rhs.mem_;
-    rhs.mem_ = nullptr;
 }
 
 template <typename T, std::size_t Size>
 MemGuard<T, Size>& MemGuard<T, Size>::operator=(MemGuard&& rhs) {
     if (rhs.mem_ != mem_) {
         clear();
+        mem_ = rhs.mem_;
+        rhs.mem_ = nullptr;
     }
-
-    mem_ = rhs.mem_;
-    rhs.mem_ = nullptr;
-
     return *this;
 }
 
@@ -123,23 +122,19 @@ template <typename T, std::size_t Size>
 MemAccessGuard<T, Size>::MemAccessGuard(MemAccessGuard&& rhs) {
     if (rhs.mem_ != mem_) {
         clear();
+        mem_ = rhs.mem_;
+        rhs.mem_ = nullptr;
     }
-
-    mem_ = rhs.mem_;
-    rhs.mem_ = nullptr;
 }
 
 template <typename T, std::size_t Size>
 MemAccessGuard<T, Size>& MemAccessGuard<T, Size>::operator=(MemAccessGuard&& rhs) {
     if (rhs.mem_ != mem_) {
         clear();
+        mem_ = rhs.mem_;
+        rhs.mem_ = nullptr;
     }
-
-    mem_ = rhs.mem_;
-    rhs.mem_ = nullptr;
-
     return *this;
 }
-
 }  // namespace cscrypto
 #endif  // CSCRYPTO_MEMORY_PROTECTION_HPP
