@@ -77,6 +77,14 @@ PrivateKey PrivateKey::readFromBytes(const Bytes& bytes) {
     return result;
 }
 
+PrivateKey PrivateKey::readFromBytes(const MemGuard<Byte, kPrivateKeySize>& bytes) {
+    PrivateKey result;
+    result.mem_ = sodium_malloc(kPrivateKeySize);
+    memcpy(result.mem_, bytes.data(), kPrivateKeySize);
+    sodium_mprotect_noaccess(result.mem_);
+    return result;
+}
+
 PrivateKey PrivateKey::readFromEncrypted(const Bytes& bytes, const char* passwd, size_t pswdLen) {
     if (bytes.size() < crypto_aead_chacha20poly1305_NPUBBYTES)
         return PrivateKey();

@@ -26,6 +26,7 @@ public:
     }
 
     static PrivateKey readFromBytes(const Bytes&);
+    static PrivateKey readFromBytes(const MemGuard<Byte, kPrivateKeySize>&);
     static PrivateKey readFromEncrypted(const Bytes&, const char* passwd, size_t pswdLen);
 
     Bytes getEncrypted(const char* passwd, size_t pswdLen) const;
