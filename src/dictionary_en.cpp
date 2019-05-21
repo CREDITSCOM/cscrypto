@@ -2,7 +2,7 @@
 
 namespace cscrypto {
 namespace mnemonic {
-namespace lang {
+namespace langs {
 
 const Dictionary en = {
     {

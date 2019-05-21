@@ -25,8 +25,7 @@ inline size_t getIndex(const cscrypto::Byte* bits, size_t wordNum) {
     size_t pos = wordNum * kBitsWord;
     size_t end = pos + kBitsWord;
     while (pos < end) {
-        result |= uint8_t(getBit(bits, pos));
-        result <<= 1;
+        result |= uint8_t(getBit(bits, pos)) << (pos % kBitsWord);
         ++pos;
     }
     return result;
@@ -34,7 +33,7 @@ inline size_t getIndex(const cscrypto::Byte* bits, size_t wordNum) {
 
 inline void putIndex(cscrypto::Byte* bits, size_t wordNum, size_t index) {
     for (size_t i = 0; i < kBitsWord; ++i) {
-        if (wordNum * kBitsWord + i < kBitsAll) {
+        if (wordNum * kBitsWord + i < kBitsAll - kBitsCheckSum) {
             auto bit = getBit(reinterpret_cast<cscrypto::Byte*>(&index), i);
             putBit(bits, wordNum * kBitsWord + i, bit);
         }
@@ -63,6 +62,7 @@ MasterSeed wordsToMasterSeed(const WordList& words,
         const Dictionary& dictionary,
         std::function<void(const char*)> errorHandler) {
     MasterSeed result;
+    cscrypto::fillWithZeros(result.data(), result.size());
     bool indexAdded = false;
     for (size_t i = 0; i < words.size(); ++i) {
         for (size_t j = 0; j < dictionary.size(); ++j) {

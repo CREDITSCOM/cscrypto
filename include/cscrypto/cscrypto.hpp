@@ -10,6 +10,7 @@
  *   CS cryptography module.
  *   It was designed to have an opportunity of crypto engines substitution.
  */
-#include "cscrypto/maincryptofunctions.hpp"
+#include <cscrypto/maincryptofunctions.hpp>
+#include <cscrypto/mnemonic.hpp>
 
 #endif  // CSCRYPTO_HPP
