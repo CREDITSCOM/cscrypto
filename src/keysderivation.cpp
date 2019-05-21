@@ -18,5 +18,13 @@ PrivateKey derivePrivateKey(MasterSeed& seed, KeyId id, const Context& ctx) {
     return PrivateKey::readFromBytes(subkey);
 }
 
+void accessMasterSeed(MasterSeed& seed) {
+    sodium_mprotect_readonly(seed.data());
+}
+
+void lockMasterSeed(MasterSeed& seed) {
+    sodium_mprotect_noaccess(seed.data());
+}
+
 } // namespace keys_derivation
 } // namespace cscrypto

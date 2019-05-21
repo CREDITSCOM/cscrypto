@@ -17,7 +17,11 @@ using MasterSeed = MemGuard<cscrypto::Byte, kMasterSeedSize>;
 using Context = std::array<const char, kSeedContextSize>;
 
 MasterSeed generateMaterSeed();
+
 PrivateKey derivePrivateKey(MasterSeed&, KeyId, const Context& ctx = {0});
+
+void accessMasterSeed(MasterSeed&);
+void lockMasterSeed(MasterSeed&);
 
 } // namespace keys_derivation
 } // namespace cscrypto
