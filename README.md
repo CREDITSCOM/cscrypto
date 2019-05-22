@@ -14,6 +14,8 @@ Cscrypto is credits company's crypto library supporting:
  - random data generation
  - memory protection
  - private data ciphering
+ - deterministic keys derivation
+ - keys recovery from mnemonic phrase
 
 ## Building from source
 For production release:
