@@ -5,8 +5,6 @@
 #include <QSizePolicy>
 #include <QFrame>
 
-#include <vector>
-
 #include "keygenwidget.hpp"
 #include "hashwidget.hpp"
 #include "signwidget.hpp"

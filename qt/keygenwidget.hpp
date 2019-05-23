@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class QLayout;
+
 namespace cscrypto {
 namespace gui {
 
@@ -11,6 +13,10 @@ class KeyGenWidget : public QWidget {
 
 public:
     KeyGenWidget(QWidget* parent = nullptr);
+
+private:
+    void fillSeedLayout(QLayout*);
+    void fillKeyLayout(QLayout*);
 };
 
 } // namespace gui
