@@ -1,9 +1,9 @@
 #include <QApplication>
-#include <QWidget>
+#include "mainwidget.hpp"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
-    QWidget w;
+    cscrypto::gui::MainWidget w;
     w.show();
     return app.exec();
 }
