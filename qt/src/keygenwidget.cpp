@@ -10,6 +10,35 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <sstream>
+#include <string>
+#include <cstring>
+#include <iostream>
+#include <algorithm>
+
+namespace {
+cscrypto::mnemonic::WordList toWordList(QString& s) {
+    using cscrypto::mnemonic::langs::en;
+    std::istringstream ss(s.toStdString());
+    cscrypto::mnemonic::WordList res;
+    for (auto it = res.begin(); it != res.end(); ++it) {
+        if (!ss) {
+            return res;
+        }
+        std::string word;
+        ss >> word;
+        auto dictionary = std::find_if(en.begin(), en.end(),
+                                       [&word](const char* w) {return std::strcmp(word.c_str(), w) == 0; });
+        *it = *dictionary;
+    }
+    return res;
+}
+
+void seedErrorHandler(const char* msg) {
+    std::cerr << msg << std::endl;
+}
+} // namespace
+
 namespace cscrypto {
 namespace gui {
 
@@ -45,7 +74,7 @@ void KeyGenWidget::fillSeedLayout(QLayout* l) {
     QPushButton* b2 = new QPushButton(this);
     b2->setText(tr("load seed file"));
     l->addWidget(b2);
-    connect(b2, &QPushButton::clicked, new QFileDialog(this), &QFileDialog::show);
+    connect(b2, &QPushButton::clicked, this, &KeyGenWidget::loadSeedFromFile);
 
     QPushButton* b3 = new QPushButton(this);
     b3->setText(tr("type seed phrase"));
@@ -56,6 +85,28 @@ void KeyGenWidget::fillSeedLayout(QLayout* l) {
     connect(this, SIGNAL(enableNewSeed(bool)), b1, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableNewSeed(bool)), b2, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableNewSeed(bool)), b3, SLOT(setEnabled(bool)));
+}
+
+void KeyGenWidget::loadSeedFromFile() {
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Choose file to load seed phrase from"), "",
+                                                    tr("seed phrase (*.txt)"));
+    if (fileName.isEmpty()) {
+        QMessageBox::critical(this, tr("Error!"), tr("File to save seed phrase was not chosen!"));
+    }
+    else {
+        QFile f(fileName);
+        if (!f.open(QIODevice::ReadOnly)) {
+            QMessageBox::critical(this, tr("Error!"), tr("Unable to open file!"));
+            return;
+        }
+        QTextStream in(&f);
+        QString seedString = in.readAll();
+        auto seedWords = toWordList(seedString);
+        masterSeed_ = cscrypto::mnemonic::wordsToMasterSeed(seedWords,
+                                                            cscrypto::mnemonic::langs::en,
+                                                            &seedErrorHandler);
+    }
 }
 
 void KeyGenWidget::fillKeyLayout(QLayout* l) {

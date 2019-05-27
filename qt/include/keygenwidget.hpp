@@ -2,7 +2,6 @@
 #define KEYGEN_WIDGET_HPP
 
 #include <QWidget>
-
 #include <QString>
 
 #include <cscrypto/cscrypto.hpp>
@@ -21,8 +20,8 @@ public:
     KeyGenWidget(QWidget* parent = nullptr);
 
 signals:
-void enableKeyGen(bool);
-void enableNewSeed(bool);
+    void enableKeyGen(bool);
+    void enableNewSeed(bool);
 
 private:
     void fillSeedLayout(QLayout*);
@@ -32,6 +31,7 @@ private:
     void disableKeyGen();
 
     void saveSeedToFile();
+    void loadSeedFromFile();
 
     void genNewSeed();
     QString getSeedString();
