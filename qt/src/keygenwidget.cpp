@@ -73,7 +73,7 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
     mainLayout->addLayout(mainHLayout);
     mainLayout->addLayout(mainLowLayout);
     setLayout(mainLayout);
-};
+}
 
 void KeyGenWidget::fillKeyListLayout(QLayout* l) {
     QLabel* lbl = new QLabel(this);
