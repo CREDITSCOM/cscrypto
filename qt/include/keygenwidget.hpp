@@ -34,6 +34,7 @@ private:
     void fillSeedLayout(QLayout*);
     void fillKeyLayout(QLayout*);
     void fillKeyListLayout(QLayout*);
+    void fillMainLowLayout(QLayout*);
 
     void setupSeedDia();
     void setupTypeSeedDia();

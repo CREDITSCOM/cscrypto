@@ -43,25 +43,35 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
           seedGenDialog_(new QDialog(this)),
           typeSeedDialog_(new QDialog(this)),
           nextKeyId_(0) {
-    QHBoxLayout* mainLayout = new QHBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    QHBoxLayout* mainHLayout = new QHBoxLayout;
     QVBoxLayout* mainLeftLayout = new QVBoxLayout;
     QVBoxLayout* mainRightLayout = new QVBoxLayout;
+    QHBoxLayout* mainLowLayout = new QHBoxLayout;
 
     QVBoxLayout* seedLayout = new QVBoxLayout;
     QVBoxLayout* keysLayout = new QVBoxLayout;
 
+    QVBoxLayout* keyListLayout = new QVBoxLayout;
+
     setupSeedDia();
     setupTypeSeedDia();
 
-    fillKeyListLayout(mainRightLayout);
+    fillKeyListLayout(keyListLayout);
     fillSeedLayout(seedLayout);
     fillKeyLayout(keysLayout);
+    fillMainLowLayout(mainLowLayout);
 
-    mainLayout->addLayout(mainLeftLayout);
-    mainLayout->addLayout(mainRightLayout);
+    mainHLayout->addLayout(mainLeftLayout);
+    mainHLayout->addLayout(mainRightLayout);
 
     mainLeftLayout->addLayout(seedLayout);
     mainLeftLayout->addLayout(keysLayout);
+
+    mainRightLayout->addLayout(keyListLayout);
+
+    mainLayout->addLayout(mainHLayout);
+    mainLayout->addLayout(mainLowLayout);
     setLayout(mainLayout);
 };
 
@@ -72,6 +82,16 @@ void KeyGenWidget::fillKeyListLayout(QLayout* l) {
 
     keysList_ = new QListWidget(this);
     l->addWidget(keysList_);
+}
+
+void KeyGenWidget::fillMainLowLayout(QLayout* l) {
+    l->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
+                               QSizePolicy::Policy::Minimum));
+
+    QPushButton* b1 = new QPushButton(this);
+    b1->setText(tr("Dump key to file"));
+    b1->setEnabled(false);
+    l->addWidget(b1);
 }
 
 void KeyGenWidget::fillSeedLayout(QLayout* l) {
