@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
+#include <QLineEdit>
+#include <QSpacerItem>
 
 #include <sstream>
 #include <string>
@@ -46,17 +48,25 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
         : QWidget(parent),
           seedGenDialog_(new QDialog(this)),
           typeSeedDialog_(new QDialog(this)) {
-    QVBoxLayout* mainLayout = new QVBoxLayout;
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    QVBoxLayout* mainLeftLayout = new QVBoxLayout;
+    // @TODO : display available keys
+    QVBoxLayout* mainRightLayout = new QVBoxLayout;
+
     QVBoxLayout* seedLayout = new QVBoxLayout;
     QVBoxLayout* keysLayout = new QVBoxLayout;
 
     setupSeedDia();
+    setupTypeSeedDia();
 
     fillSeedLayout(seedLayout);
     fillKeyLayout(keysLayout);
 
-    mainLayout->addLayout(seedLayout);
-    mainLayout->addLayout(keysLayout);
+    mainLayout->addLayout(mainLeftLayout);
+    mainLayout->addLayout(mainRightLayout);
+
+    mainLeftLayout->addLayout(seedLayout);
+    mainLeftLayout->addLayout(keysLayout);
     setLayout(mainLayout);
 };
 
@@ -85,6 +95,28 @@ void KeyGenWidget::fillSeedLayout(QLayout* l) {
     connect(this, SIGNAL(enableNewSeed(bool)), b1, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableNewSeed(bool)), b2, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableNewSeed(bool)), b3, SLOT(setEnabled(bool)));
+}
+
+void KeyGenWidget::setupTypeSeedDia() {
+    typeSeedDialog_->setWindowTitle(tr("Seed input"));
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+
+    QLabel* lbl = new QLabel(typeSeedDialog_);
+    lbl->setText(tr("24 words devided with spaces:"));
+    mainLayout->addWidget(lbl);
+
+    QLineEdit* seedLine = new QLineEdit(typeSeedDialog_);
+    mainLayout->addWidget(seedLine);
+    typeSeedDialog_->setLayout(mainLayout);
+
+    QHBoxLayout* lowLayout = new QHBoxLayout;
+    mainLayout->addLayout(lowLayout);
+
+
+    lowLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding));
+    QPushButton* b = new QPushButton(typeSeedDialog_);
+    b->setText(tr("Ok"));
+    lowLayout->addWidget(b);
 }
 
 void KeyGenWidget::loadSeedFromFile() {

@@ -27,6 +27,7 @@ private:
     void fillSeedLayout(QLayout*);
     void fillKeyLayout(QLayout*);
     void setupSeedDia();
+    void setupTypeSeedDia();
     void setSeedOnMsBox();
     void disableKeyGen();
 
