@@ -4,12 +4,16 @@
 #include <QWidget>
 #include <QString>
 
+#include <vector>
+#include <utility>
+
 #include <cscrypto/cscrypto.hpp>
 
 class QLayout;
 class QDialog;
 class QMessageBox;
 class QLineEdit;
+class QListWidget;
 
 namespace cscrypto {
 namespace gui {
@@ -25,12 +29,18 @@ signals:
     void enableNewSeed(bool);
 
 private:
+    using KeyPair = std::pair<cscrypto::PublicKey, cscrypto::PrivateKey>;
+
     void fillSeedLayout(QLayout*);
     void fillKeyLayout(QLayout*);
+    void fillKeyListLayout(QLayout*);
+
     void setupSeedDia();
     void setupTypeSeedDia();
+
     void setSeedOnMsBox();
     void disableKeyGen();
+
     void fillMasterSeedFromString(const QString&);
     void handleInputSeed();
 
@@ -44,8 +54,11 @@ private:
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
+    QListWidget* keysList_;
 
     cscrypto::keys_derivation::MasterSeed masterSeed_;
+    cscrypto::keys_derivation::KeyId nextKeyId_;
+    std::vector<KeyPair> keys_;
 };
 
 } // namespace gui

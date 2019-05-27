@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include <QLineEdit>
 #include <QSpacerItem>
+#include <QListWidget>
 
 #include <sstream>
 #include <string>
@@ -41,7 +42,6 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
           typeSeedDialog_(new QDialog(this)) {
     QHBoxLayout* mainLayout = new QHBoxLayout;
     QVBoxLayout* mainLeftLayout = new QVBoxLayout;
-    // @TODO : display available keys
     QVBoxLayout* mainRightLayout = new QVBoxLayout;
 
     QVBoxLayout* seedLayout = new QVBoxLayout;
@@ -50,6 +50,7 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
     setupSeedDia();
     setupTypeSeedDia();
 
+    fillKeyListLayout(mainRightLayout);
     fillSeedLayout(seedLayout);
     fillKeyLayout(keysLayout);
 
@@ -60,6 +61,15 @@ KeyGenWidget::KeyGenWidget(QWidget* parent)
     mainLeftLayout->addLayout(keysLayout);
     setLayout(mainLayout);
 };
+
+void KeyGenWidget::fillKeyListLayout(QLayout* l) {
+    QLabel* lbl = new QLabel(this);
+    lbl->setText(tr("Available keys:"));
+    l->addWidget(lbl);
+
+    keysList_ = new QListWidget(this);
+    l->addWidget(keysList_);
+}
 
 void KeyGenWidget::fillSeedLayout(QLayout* l) {
     QLabel* label = new QLabel(this);
