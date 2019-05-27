@@ -9,6 +9,7 @@
 class QLayout;
 class QDialog;
 class QMessageBox;
+class QLineEdit;
 
 namespace cscrypto {
 namespace gui {
@@ -30,7 +31,8 @@ private:
     void setupTypeSeedDia();
     void setSeedOnMsBox();
     void disableKeyGen();
-    cscrypto::mnemonic::WordList seedToWords(const QString&);
+    void fillMasterSeedFromString(const QString&);
+    void handleInputSeed();
 
     void saveSeedToFile();
     void loadSeedFromFile();
@@ -41,6 +43,7 @@ private:
     QDialog* seedGenDialog_;
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
+    QLineEdit* seedLineEdit_;
 
     cscrypto::keys_derivation::MasterSeed masterSeed_;
 };

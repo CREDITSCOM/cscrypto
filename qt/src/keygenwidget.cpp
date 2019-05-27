@@ -30,10 +30,6 @@ bool findWordInDictionary(const char* word, size_t& index) {
     }
     return found;
 }
-
-void seedErrorHandler(const char* msg) {
-    std::cerr << msg << std::endl;
-}
 } // namespace
 
 namespace cscrypto {
@@ -100,8 +96,8 @@ void KeyGenWidget::setupTypeSeedDia() {
     lbl->setText(tr("24 words devided with spaces:"));
     mainLayout->addWidget(lbl);
 
-    QLineEdit* seedLine = new QLineEdit(typeSeedDialog_);
-    mainLayout->addWidget(seedLine);
+    seedLineEdit_ = new QLineEdit(typeSeedDialog_);
+    mainLayout->addWidget(seedLineEdit_);
     typeSeedDialog_->setLayout(mainLayout);
 
     QHBoxLayout* lowLayout = new QHBoxLayout;
@@ -111,9 +107,16 @@ void KeyGenWidget::setupTypeSeedDia() {
     QPushButton* b = new QPushButton(typeSeedDialog_);
     b->setText(tr("Ok"));
     lowLayout->addWidget(b);
+
+    connect(b, SIGNAL(clicked()), typeSeedDialog_, SLOT(close()));
+    connect(b, &QPushButton::clicked, this, &KeyGenWidget::handleInputSeed);
 }
 
-cscrypto::mnemonic::WordList KeyGenWidget::seedToWords(const QString& s) {
+void KeyGenWidget::handleInputSeed() {
+    fillMasterSeedFromString(seedLineEdit_->text());
+}
+
+void KeyGenWidget::fillMasterSeedFromString(const QString& s) {
     using cscrypto::mnemonic::langs::en;
     std::istringstream ss(s.toStdString());
     cscrypto::mnemonic::WordList res;
@@ -121,7 +124,7 @@ cscrypto::mnemonic::WordList KeyGenWidget::seedToWords(const QString& s) {
 
     for (auto it = res.begin(); it != res.end(); ++it) {
         if (!ss) {
-            return res;
+            allValid = false;
         }
         std::string word;
         ss >> word;
@@ -136,12 +139,13 @@ cscrypto::mnemonic::WordList KeyGenWidget::seedToWords(const QString& s) {
     if (allValid) {
         emit enableKeyGen(true);
         emit enableNewSeed(false);
+        QMessageBox::information(this, tr("Success!"), tr("Seed phrase is correct!"));
+        masterSeed_ = cscrypto::mnemonic::wordsToMasterSeed(res);
     }
     else {
         QMessageBox::critical(this, tr("Error!"), tr("Incorrect seed phrase"));
         disableKeyGen();
     }
-    return res;
 }
 
 void KeyGenWidget::loadSeedFromFile() {
@@ -158,11 +162,7 @@ void KeyGenWidget::loadSeedFromFile() {
             return;
         }
         QTextStream in(&f);
-        QString seedString = in.readAll();
-        auto seedWords = seedToWords(seedString);
-        masterSeed_ = cscrypto::mnemonic::wordsToMasterSeed(seedWords,
-                                                            cscrypto::mnemonic::langs::en,
-                                                            &seedErrorHandler);
+        fillMasterSeedFromString(in.readAll());
     }
 }
 
