@@ -47,6 +47,7 @@ private:
 
     void saveSeedToFile();
     void loadSeedFromFile();
+    void dumpKeysToFile();
 
     void genNewSeed();
     QString getSeedString();

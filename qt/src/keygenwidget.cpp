@@ -92,6 +92,34 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
     b1->setText(tr("Dump key to file"));
     b1->setEnabled(false);
     l->addWidget(b1);
+
+    connect(keysList_, &QListWidget::itemClicked, b1, &QPushButton::setEnabled);
+    connect(b1, &QPushButton::clicked, this, &KeyGenWidget::dumpKeysToFile);
+}
+
+void KeyGenWidget::dumpKeysToFile() {
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Choose file to dump keys"), "",
+                                                    tr("key file(*.json)"));
+    if (fileName.isEmpty()) {
+        QMessageBox::information(this, tr("Info"), tr("File was not selected!"));
+        return;
+    }
+    QFile f(fileName);
+    if (!f.open(QIODevice::WriteOnly)) {
+        QMessageBox::information(this, tr("Info"), tr("Unable to open file!"));
+    }
+
+    auto keyPair = keys_[size_t(keysList_->currentRow())];
+    QString s = "{\"key\":{\"public\":\"";
+    s += QString::fromUtf8(EncodeBase58(keyPair.first.begin(), keyPair.first.end()).c_str());
+    s += "\",\"private\":\"";
+    auto sk = keyPair.second.access();
+    s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
+    s += "\"}}";
+    QTextStream out(&f);
+    out << s;
+    QMessageBox::information(this, tr("Info"), tr("Keys saved to file"));
 }
 
 void KeyGenWidget::fillSeedLayout(QLayout* l) {
