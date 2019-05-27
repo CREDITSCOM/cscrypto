@@ -30,6 +30,7 @@ private:
     void setupTypeSeedDia();
     void setSeedOnMsBox();
     void disableKeyGen();
+    cscrypto::mnemonic::WordList seedToWords(const QString&);
 
     void saveSeedToFile();
     void loadSeedFromFile();

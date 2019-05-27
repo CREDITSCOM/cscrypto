@@ -19,21 +19,16 @@
 #include <algorithm>
 
 namespace {
-cscrypto::mnemonic::WordList toWordList(QString& s) {
+bool findWordInDictionary(const char* word, size_t& index) {
     using cscrypto::mnemonic::langs::en;
-    std::istringstream ss(s.toStdString());
-    cscrypto::mnemonic::WordList res;
-    for (auto it = res.begin(); it != res.end(); ++it) {
-        if (!ss) {
-            return res;
+    bool found = false;
+    for (size_t i = 0; i < en.size(); ++i) {
+        if (std::strcmp(word, en[i]) == 0) {
+            found = true;
+            index = i;
         }
-        std::string word;
-        ss >> word;
-        auto dictionary = std::find_if(en.begin(), en.end(),
-                                       [&word](const char* w) {return std::strcmp(word.c_str(), w) == 0; });
-        *it = *dictionary;
     }
-    return res;
+    return found;
 }
 
 void seedErrorHandler(const char* msg) {
@@ -112,11 +107,41 @@ void KeyGenWidget::setupTypeSeedDia() {
     QHBoxLayout* lowLayout = new QHBoxLayout;
     mainLayout->addLayout(lowLayout);
 
-
     lowLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding));
     QPushButton* b = new QPushButton(typeSeedDialog_);
     b->setText(tr("Ok"));
     lowLayout->addWidget(b);
+}
+
+cscrypto::mnemonic::WordList KeyGenWidget::seedToWords(const QString& s) {
+    using cscrypto::mnemonic::langs::en;
+    std::istringstream ss(s.toStdString());
+    cscrypto::mnemonic::WordList res;
+    bool allValid = true;
+
+    for (auto it = res.begin(); it != res.end(); ++it) {
+        if (!ss) {
+            return res;
+        }
+        std::string word;
+        ss >> word;
+        size_t index;
+        if (!findWordInDictionary(word.c_str(), index)) {
+            allValid = false;
+            break;
+        }
+        *it = en[index];
+    }
+
+    if (allValid) {
+        emit enableKeyGen(true);
+        emit enableNewSeed(false);
+    }
+    else {
+        QMessageBox::critical(this, tr("Error!"), tr("Incorrect seed phrase"));
+        disableKeyGen();
+    }
+    return res;
 }
 
 void KeyGenWidget::loadSeedFromFile() {
@@ -134,7 +159,7 @@ void KeyGenWidget::loadSeedFromFile() {
         }
         QTextStream in(&f);
         QString seedString = in.readAll();
-        auto seedWords = toWordList(seedString);
+        auto seedWords = seedToWords(seedString);
         masterSeed_ = cscrypto::mnemonic::wordsToMasterSeed(seedWords,
                                                             cscrypto::mnemonic::langs::en,
                                                             &seedErrorHandler);
