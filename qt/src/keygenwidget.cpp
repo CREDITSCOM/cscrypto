@@ -19,6 +19,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <base58.h>
+
 namespace {
 bool findWordInDictionary(const char* word, size_t& index) {
     using cscrypto::mnemonic::langs::en;
@@ -39,7 +41,8 @@ namespace gui {
 KeyGenWidget::KeyGenWidget(QWidget* parent)
         : QWidget(parent),
           seedGenDialog_(new QDialog(this)),
-          typeSeedDialog_(new QDialog(this)) {
+          typeSeedDialog_(new QDialog(this)),
+          nextKeyId_(0) {
     QHBoxLayout* mainLayout = new QHBoxLayout;
     QVBoxLayout* mainLeftLayout = new QVBoxLayout;
     QVBoxLayout* mainRightLayout = new QVBoxLayout;
@@ -191,6 +194,7 @@ void KeyGenWidget::fillKeyLayout(QLayout* l) {
     b2->setText(tr("key pair"));
     b2->setEnabled(false);
     l->addWidget(b2);
+    connect(b2, &QPushButton::clicked, this, &KeyGenWidget::genKeyPair);
 
     QPushButton* b3 = new QPushButton(this);
     b3->setText(tr("public from private"));
@@ -203,6 +207,17 @@ void KeyGenWidget::fillKeyLayout(QLayout* l) {
     connect(this, SIGNAL(enableKeyGen(bool)), b3, SLOT(setEnabled(bool)));
 
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::disableKeyGen);
+}
+
+void KeyGenWidget::genKeyPair() {
+    KeyPair newPair;
+    newPair.second = cscrypto::keys_derivation::derivePrivateKey(masterSeed_, nextKeyId_++);
+    newPair.first = cscrypto::getMatchingPublic(newPair.second);
+    keys_.push_back(newPair);
+
+    QString s = QString::fromUtf8(EncodeBase58(newPair.first.begin(), newPair.first.end()).c_str());
+    keysList_->addItem(s);
+    QMessageBox::information(this, tr("Success!"), tr("New key pair have been generated!"));
 }
 
 inline QString KeyGenWidget::getSeedString() {

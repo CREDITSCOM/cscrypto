@@ -49,6 +49,7 @@ private:
 
     void genNewSeed();
     QString getSeedString();
+    void genKeyPair();
 
     QDialog* seedGenDialog_;
     QDialog* typeSeedDialog_;
