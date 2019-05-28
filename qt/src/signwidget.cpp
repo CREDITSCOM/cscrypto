@@ -9,19 +9,36 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QMessageBox>
+#include <QDialog>
+#include <QListWidget>
 
 #include <utils.hpp>
+#include <keygenwidget.hpp>
+
+#include <base58.h>
 
 namespace cscrypto {
 namespace gui {
 
 SignWidget::SignWidget(QStatusBar& statusBar,
                        std::vector<KeyPair>& keys,
+                       const KeyGenWidget* keyGenerator,
                        QWidget* parent)
         : QWidget(parent),
+          keysList_(new QListWidget(this)),
           statusBar_(statusBar),
           keys_(keys) {
+    keysList_->hide();
+    connect(keyGenerator, &KeyGenWidget::newKeyAdded, this, &SignWidget::addNewKey);
     tuneLayouts();
+}
+
+void SignWidget::addNewKey() {
+    if (!keys_.empty()) {
+        auto keyPair = keys_.back();
+        keysList_->addItem(EncodeBase58(keyPair.first.data(),
+                                        keyPair.first.data() + keyPair.first.size()).c_str());
+    }
 }
 
 void SignWidget::tuneLayouts() {
@@ -83,6 +100,23 @@ void SignWidget::fillKeysLayout(QLayout* l) {
     typePubBtn->setEnabled(false);
     connect(this, &SignWidget::enableSigning, chooseKeyBtn, &QPushButton::setEnabled);
     connect(this, &SignWidget::enableVerification, typePubBtn, &QPushButton::setEnabled);
+    connect(chooseKeyBtn, &QPushButton::clicked, this, &SignWidget::chooseSigningKey);
+}
+
+void SignWidget::chooseSigningKey() {
+    if (keys_.empty()) {
+        QMessageBox::critical(this, tr("Error!"), tr("No private keys detected! Generate firts!"));
+        return;
+    }
+    QDialog* choosingKeyDialog = new QDialog(this);
+    QVBoxLayout* mainLayout = new QVBoxLayout();
+    QHBoxLayout* lowLayout = new QHBoxLayout();
+    mainLayout->addWidget(keysList_);
+    keysList_->show();
+
+    mainLayout->addLayout(lowLayout);
+    choosingKeyDialog->setLayout(mainLayout);
+    choosingKeyDialog->show();
 }
 
 void SignWidget::fillMiddleLayout(QLayout* l) {
