@@ -90,11 +90,8 @@ void MemGuard<T, Size>::clear() {
 
 template <typename T, std::size_t Size>
 MemGuard<T, Size>::MemGuard(MemGuard&& rhs) {
-    if (rhs.mem_ != mem_) {
-        clear();
-        mem_ = rhs.mem_;
-        rhs.mem_ = nullptr;
-    }
+    mem_ = rhs.mem_;
+    rhs.mem_ = nullptr;
 }
 
 template <typename T, std::size_t Size>

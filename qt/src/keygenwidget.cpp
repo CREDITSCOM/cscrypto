@@ -112,7 +112,8 @@ void KeyGenWidget::dumpKeysToFile() {
 
     auto keyPair = keys_[size_t(keysList_->currentRow())];
     QString s = "{\"key\":{\"public\":\"";
-    s += QString::fromUtf8(EncodeBase58(keyPair.first.begin(), keyPair.first.end()).c_str());
+    s += QString::fromUtf8(EncodeBase58(keyPair.first.data(),
+                                        keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\",\"private\":\"";
     auto sk = keyPair.second.access();
     s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
@@ -263,7 +264,8 @@ void KeyGenWidget::genKeyPair() {
     newPair.first = cscrypto::getMatchingPublic(newPair.second);
     keys_.push_back(newPair);
 
-    QString s = QString::fromUtf8(EncodeBase58(newPair.first.begin(), newPair.first.end()).c_str());
+    QString s = QString::fromUtf8(EncodeBase58(newPair.first.data(),
+                                               newPair.first.data() + newPair.first.size()).c_str());
     keysList_->addItem(s);
     QMessageBox::information(this, tr("Success!"), tr("New key pair have been generated!"));
 }
