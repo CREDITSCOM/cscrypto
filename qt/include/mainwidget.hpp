@@ -5,6 +5,8 @@
 
 #include <map>
 
+#include <common.hpp>
+
 class QTabWidget;
 
 namespace cscrypto {
@@ -22,6 +24,7 @@ private:
 
     QTabWidget* tabs_;
     std::map<const char*, QWidget*> widgets_;
+    std::vector<KeyPair> keys_;
 };
 
 } // namespace gui

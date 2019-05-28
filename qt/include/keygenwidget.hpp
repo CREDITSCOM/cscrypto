@@ -4,10 +4,7 @@
 #include <QWidget>
 #include <QString>
 
-#include <vector>
-#include <utility>
-
-#include <cscrypto/cscrypto.hpp>
+#include <common.hpp>
 
 class QLayout;
 class QDialog;
@@ -22,15 +19,13 @@ class KeyGenWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyGenWidget(QWidget* parent = nullptr);
+    KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent = nullptr);
 
 signals:
     void enableKeyGen(bool);
     void enableNewSeed(bool);
 
 private:
-    using KeyPair = std::pair<cscrypto::PublicKey, cscrypto::PrivateKey>;
-
     void fillSeedLayout(QLayout*);
     void fillKeyLayout(QLayout*);
     void fillKeyListLayout(QLayout*);
@@ -61,7 +56,7 @@ private:
 
     cscrypto::keys_derivation::MasterSeed masterSeed_;
     cscrypto::keys_derivation::KeyId nextKeyId_;
-    std::vector<KeyPair> keys_;
+    std::vector<KeyPair>& keys_;
 };
 
 } // namespace gui

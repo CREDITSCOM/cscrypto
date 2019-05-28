@@ -38,11 +38,12 @@ bool findWordInDictionary(const char* word, size_t& index) {
 namespace cscrypto {
 namespace gui {
 
-KeyGenWidget::KeyGenWidget(QWidget* parent)
+KeyGenWidget::KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent)
         : QWidget(parent),
           seedGenDialog_(new QDialog(this)),
           typeSeedDialog_(new QDialog(this)),
-          nextKeyId_(0) {
+          nextKeyId_(0),
+          keys_(keys) {
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* mainHLayout = new QHBoxLayout;
     QVBoxLayout* mainLeftLayout = new QVBoxLayout;
@@ -187,6 +188,7 @@ void KeyGenWidget::fillMasterSeedFromString(const QString& s) {
     for (auto it = res.begin(); it != res.end(); ++it) {
         if (!ss) {
             allValid = false;
+            break;
         }
         std::string word;
         ss >> word;

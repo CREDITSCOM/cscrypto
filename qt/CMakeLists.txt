@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
   src/hashwidget.cpp
   src/signwidget.cpp
   src/cipherwidget.cpp
+  include/common.hpp
   ${HEADERS}
   ${MOC_FILES})
 
