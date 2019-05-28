@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#include <common.hpp>
+
+class QStatusBar;
+
 namespace cscrypto {
 namespace gui {
 
@@ -10,7 +14,13 @@ class SignWidget : public QWidget {
     Q_OBJECT
 
 public:
-    SignWidget(QWidget* parent);
+    SignWidget(QStatusBar& statusBar, std::vector<KeyPair>& keys, QWidget* parent = nullptr);
+
+private:
+    void tuneLayouts();
+
+    QStatusBar& statusBar_;
+    std::vector<KeyPair>& keys_;
 };
 } // namespace gui
 } // namespace cscrypto
