@@ -258,15 +258,60 @@ void KeyGenWidget::fillKeyLayout(QLayout* l) {
 
     QPushButton* b3 = new QPushButton(this);
     b3->setText(tr("public from private"));
-    b3->setEnabled(false);
     l->addWidget(b3);
+    connect(b3, &QPushButton::clicked, this, &KeyGenWidget::genPublicFromPrivateDialog);
 
     connect(this, SIGNAL(enableKeyGen(bool)), label, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b1, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b2, SLOT(setEnabled(bool)));
-    connect(this, SIGNAL(enableKeyGen(bool)), b3, SLOT(setEnabled(bool)));
 
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::disableKeyGen);
+}
+
+void KeyGenWidget::genPublicFromPrivateDialog() {
+    QDialog* d = new QDialog(this);
+    QVBoxLayout* l = new QVBoxLayout;
+    QHBoxLayout* l1 = new QHBoxLayout;
+
+    QLabel* lbl = new QLabel(d);
+    lbl->setText(tr("Insert private key:"));
+    l->addWidget(lbl);
+
+    privateKeyLineEdit_ = new QLineEdit(d);
+    l->addWidget(privateKeyLineEdit_);
+
+    l1->addItem(new QSpacerItem(0, 0,
+                                QSizePolicy::Policy::Expanding,
+                                QSizePolicy::Policy::Minimum));
+    QPushButton* b1 = new QPushButton(d);
+    b1->setText(tr("Get public"));
+    l1->addWidget(b1);
+    l->addLayout(l1);
+
+    connect(b1, &QPushButton::clicked, this, &KeyGenWidget::handlePrivKeyLine);
+    connect(b1, &QPushButton::clicked, d, &QDialog::close);
+
+    d->setLayout(l);
+    d->show();
+}
+
+void KeyGenWidget::handlePrivKeyLine() {
+    QString privStr = privateKeyLineEdit_->text();
+    std::vector<uint8_t> vecPriv;
+    if (!DecodeBase58(privStr.toStdString(), vecPriv) || vecPriv.size() != cscrypto::kPrivateKeySize) {
+        toStatusBar(tr("Incorrect private key passed!"));
+        return;
+    }
+
+    KeyPair keys;
+    keys.second = cscrypto::PrivateKey::readFromBytes(vecPriv);
+    keys.first = cscrypto::getMatchingPublic(keys.second);
+    keys_.push_back(keys);
+
+    QString s = QString::fromUtf8(EncodeBase58(keys.first.data(),
+                                               keys.first.data() + keys.first.size()).c_str());
+    keysList_->addItem(s);
+    toStatusBar(tr("Public key was generated and added to available keys!"));
 }
 
 void KeyGenWidget::genKeyPair() {

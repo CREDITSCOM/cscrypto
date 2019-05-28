@@ -41,6 +41,7 @@ private:
 
     void fillMasterSeedFromString(const QString&);
     void handleInputSeed();
+    void handlePrivKeyLine();
 
     void saveSeedToFile();
     void loadSeedFromFile();
@@ -49,6 +50,7 @@ private:
     void genNewSeed();
     QString getSeedString();
     void genKeyPair();
+    void genPublicFromPrivateDialog();
 
     void toStatusBar(const QString& msg);
 
@@ -56,6 +58,7 @@ private:
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
+    QLineEdit* privateKeyLineEdit_;
     QListWidget* keysList_;
     QStatusBar& statusBar_;
 
