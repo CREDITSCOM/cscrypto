@@ -6,6 +6,8 @@
 #include <common.hpp>
 
 class QStatusBar;
+class QLayout;
+class QString;
 
 namespace cscrypto {
 namespace gui {
@@ -16,8 +18,21 @@ class SignWidget : public QWidget {
 public:
     SignWidget(QStatusBar& statusBar, std::vector<KeyPair>& keys, QWidget* parent = nullptr);
 
+signals:
+    void enableSigning(bool);
+    void enableVerification(bool);
+    void canSign(bool);
+    void canVerify(bool);
+
 private:
     void tuneLayouts();
+    void fillModeLayout(QLayout*);
+    void fillKeysLayout(QLayout*);
+    void fillMiddleLayout(QLayout*);
+    void fillLowLayout(QLayout*);
+
+    void activateSignMode();
+    void activateVerificationMode();
 
     QStatusBar& statusBar_;
     std::vector<KeyPair>& keys_;
