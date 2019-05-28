@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include <base58.h>
+#include <utils.hpp>
 
 namespace {
 bool findWordInDictionary(const char* word, size_t& index) {
@@ -111,12 +112,12 @@ void KeyGenWidget::dumpKeysToFile() {
                                                     tr("Choose file to dump keys"), "",
                                                     tr("key file(*.json)"));
     if (fileName.isEmpty()) {
-        toStatusBar(tr("File was not selected!"));
+        toStatusBar(statusBar_, tr("File was not selected!"));
         return;
     }
     QFile f(fileName);
     if (!f.open(QIODevice::WriteOnly)) {
-        toStatusBar(tr("Unable to open file!"));
+        toStatusBar(statusBar_, tr("Unable to open file!"));
         return;
     }
 
@@ -130,7 +131,7 @@ void KeyGenWidget::dumpKeysToFile() {
     s += "\"}}";
     QTextStream out(&f);
     out << s;
-    toStatusBar(tr("Keys have been saved to file."));
+    toStatusBar(statusBar_, tr("Keys have been saved to file."));
 }
 
 void KeyGenWidget::fillSeedLayout(QLayout* l) {
@@ -212,11 +213,11 @@ void KeyGenWidget::fillMasterSeedFromString(const QString& s) {
     if (allValid) {
         emit enableKeyGen(true);
         emit enableNewSeed(false);
-        toStatusBar(tr("Seed phrase is correct."));
+        toStatusBar(statusBar_, tr("Seed phrase is correct."));
         masterSeed_ = cscrypto::mnemonic::wordsToMasterSeed(res);
     }
     else {
-        toStatusBar(tr("Incorrect seed phrase!"));
+        toStatusBar(statusBar_, tr("Incorrect seed phrase!"));
         disableKeyGen();
     }
 }
@@ -226,12 +227,12 @@ void KeyGenWidget::loadSeedFromFile() {
                                                     tr("Choose file to load seed phrase from"), "",
                                                     tr("seed phrase (*.txt)"));
     if (fileName.isEmpty()) {
-        toStatusBar(tr("File was not selected!"));
+        toStatusBar(statusBar_, tr("File was not selected!"));
     }
     else {
         QFile f(fileName);
         if (!f.open(QIODevice::ReadOnly)) {
-            toStatusBar(tr("Unable to open file!"));
+            toStatusBar(statusBar_, tr("Unable to open file!"));
             return;
         }
         QTextStream in(&f);
@@ -299,7 +300,7 @@ void KeyGenWidget::handlePrivKeyLine() {
     QString privStr = privateKeyLineEdit_->text();
     std::vector<uint8_t> vecPriv;
     if (!DecodeBase58(privStr.toStdString(), vecPriv) || vecPriv.size() != cscrypto::kPrivateKeySize) {
-        toStatusBar(tr("Incorrect private key passed!"));
+        toStatusBar(statusBar_, tr("Incorrect private key passed!"));
         return;
     }
 
@@ -311,7 +312,7 @@ void KeyGenWidget::handlePrivKeyLine() {
     QString s = QString::fromUtf8(EncodeBase58(keys.first.data(),
                                                keys.first.data() + keys.first.size()).c_str());
     keysList_->addItem(s);
-    toStatusBar(tr("Public key was generated and added to available keys!"));
+    toStatusBar(statusBar_, tr("Public key was generated and added to available keys!"));
 }
 
 void KeyGenWidget::genKeyPair() {
@@ -323,7 +324,7 @@ void KeyGenWidget::genKeyPair() {
     QString s = QString::fromUtf8(EncodeBase58(newPair.first.data(),
                                                newPair.first.data() + newPair.first.size()).c_str());
     keysList_->addItem(s);
-    toStatusBar(tr("New key pair has been generated."));
+    toStatusBar(statusBar_, tr("New key pair has been generated."));
 }
 
 inline QString KeyGenWidget::getSeedString() {
@@ -367,13 +368,13 @@ void KeyGenWidget::saveSeedToFile() {
                                                     tr("Choose file to save seed phrase"), "",
                                                     tr("seed phrase(*.txt)"));
     if (fileName.isEmpty()) {
-        toStatusBar(tr("File was not selected!"));
+        toStatusBar(statusBar_, tr("File was not selected!"));
         return;
     }
     else {
         QFile f(fileName);
         if (!f.open(QIODevice::WriteOnly)) {
-            toStatusBar(tr("Unable to open file!"));
+            toStatusBar(statusBar_, tr("Unable to open file!"));
             return;
         }
         QTextStream out(&f);
@@ -395,10 +396,6 @@ inline void KeyGenWidget::setSeedOnMsBox() {
 void KeyGenWidget::disableKeyGen() {
     emit enableNewSeed(true);
     emit enableKeyGen(false);
-}
-
-void KeyGenWidget::toStatusBar(const QString& msg) {
-    statusBar_.showMessage(msg, 5000);
 }
 } // namespace gui
 } // namespace cscrypto

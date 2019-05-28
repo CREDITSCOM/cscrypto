@@ -52,8 +52,6 @@ private:
     void genKeyPair();
     void genPublicFromPrivateDialog();
 
-    void toStatusBar(const QString& msg);
-
     QDialog* seedGenDialog_;
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
