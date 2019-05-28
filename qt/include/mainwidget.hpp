@@ -8,6 +8,7 @@
 #include <common.hpp>
 
 class QTabWidget;
+class QStatusBar;
 
 namespace cscrypto {
 namespace gui {
@@ -23,6 +24,7 @@ private:
     void fillWidgets();
 
     QTabWidget* tabs_;
+    QStatusBar* statusBar_;
     std::map<const char*, QWidget*> widgets_;
     std::vector<KeyPair> keys_;
 };

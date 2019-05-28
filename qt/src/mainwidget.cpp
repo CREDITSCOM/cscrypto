@@ -1,9 +1,9 @@
 #include "mainwidget.hpp"
 
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QTabWidget>
 #include <QSizePolicy>
-#include <QFrame>
+#include <QStatusBar>
 
 #include "keygenwidget.hpp"
 #include "hashwidget.hpp"
@@ -15,12 +15,16 @@ namespace gui {
 
 MainWidget::MainWidget(QWidget* parent)
         : QWidget(parent),
-          tabs_(new QTabWidget(this)) {
+          tabs_(new QTabWidget(this)),
+          statusBar_(new QStatusBar(this)) {
     fillWidgets();
     fillTabs();
 
-    QHBoxLayout* mainLayout = new QHBoxLayout;
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+
     mainLayout->addWidget(tabs_);
+    mainLayout->addWidget(statusBar_);
+
     setLayout(mainLayout);
 }
 
@@ -34,7 +38,7 @@ void MainWidget::fillTabs() {
 }
 
 void MainWidget::fillWidgets() {
-    widgets_.insert(std::make_pair("keygen", new KeyGenWidget(keys_, tabs_)));
+    widgets_.insert(std::make_pair("keygen", new KeyGenWidget(*statusBar_, keys_, tabs_)));
     widgets_.insert(std::make_pair("sign", new SignWidget(tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(tabs_)));

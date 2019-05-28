@@ -11,6 +11,7 @@ class QDialog;
 class QMessageBox;
 class QLineEdit;
 class QListWidget;
+class QStatusBar;
 
 namespace cscrypto {
 namespace gui {
@@ -19,7 +20,7 @@ class KeyGenWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent = nullptr);
+    KeyGenWidget(QStatusBar& statusBar, std::vector<KeyPair>& keys, QWidget* parent = nullptr);
 
 signals:
     void enableKeyGen(bool);
@@ -49,11 +50,14 @@ private:
     QString getSeedString();
     void genKeyPair();
 
+    void toStatusBar(const QString& msg);
+
     QDialog* seedGenDialog_;
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
     QListWidget* keysList_;
+    QStatusBar& statusBar_;
 
     cscrypto::keys_derivation::MasterSeed masterSeed_;
     cscrypto::keys_derivation::KeyId nextKeyId_;
