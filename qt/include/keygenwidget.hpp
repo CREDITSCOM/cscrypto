@@ -26,6 +26,7 @@ signals:
     void enableNewSeed(bool);
 
 private:
+    void tuneLayouts();
     void fillSeedLayout(QLayout*);
     void fillKeyLayout(QLayout*);
     void fillKeyListLayout(QLayout*);

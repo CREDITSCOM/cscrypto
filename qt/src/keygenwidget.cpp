@@ -17,7 +17,6 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <algorithm>
 
 #include <base58.h>
 
@@ -44,6 +43,12 @@ KeyGenWidget::KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent)
           typeSeedDialog_(new QDialog(this)),
           nextKeyId_(0),
           keys_(keys) {
+    setupSeedDia();
+    setupTypeSeedDia();
+    tuneLayouts();
+}
+
+void KeyGenWidget::tuneLayouts() {
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* mainHLayout = new QHBoxLayout;
     QVBoxLayout* mainLeftLayout = new QVBoxLayout;
@@ -52,11 +57,7 @@ KeyGenWidget::KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent)
 
     QVBoxLayout* seedLayout = new QVBoxLayout;
     QVBoxLayout* keysLayout = new QVBoxLayout;
-
     QVBoxLayout* keyListLayout = new QVBoxLayout;
-
-    setupSeedDia();
-    setupTypeSeedDia();
 
     fillKeyListLayout(keyListLayout);
     fillSeedLayout(seedLayout);
@@ -68,6 +69,9 @@ KeyGenWidget::KeyGenWidget(std::vector<KeyPair>& keys, QWidget* parent)
 
     mainLeftLayout->addLayout(seedLayout);
     mainLeftLayout->addLayout(keysLayout);
+    mainLeftLayout->addItem(new QSpacerItem(0, 0,
+                            QSizePolicy::Policy::Minimum,
+                            QSizePolicy::Policy::Expanding));
 
     mainRightLayout->addLayout(keyListLayout);
 
