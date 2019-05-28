@@ -25,6 +25,7 @@ public:
 signals:
     void enableKeyGen(bool);
     void enableNewSeed(bool);
+    void newKeyAdded();
 
 private:
     void tuneLayouts();

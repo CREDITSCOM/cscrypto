@@ -308,6 +308,7 @@ void KeyGenWidget::handlePrivKeyLine() {
     keys.second = cscrypto::PrivateKey::readFromBytes(vecPriv);
     keys.first = cscrypto::getMatchingPublic(keys.second);
     keys_.push_back(keys);
+    emit newKeyAdded();
 
     QString s = QString::fromUtf8(EncodeBase58(keys.first.data(),
                                                keys.first.data() + keys.first.size()).c_str());
@@ -320,6 +321,7 @@ void KeyGenWidget::genKeyPair() {
     newPair.second = cscrypto::keys_derivation::derivePrivateKey(masterSeed_, nextKeyId_++);
     newPair.first = cscrypto::getMatchingPublic(newPair.second);
     keys_.push_back(newPair);
+    emit newKeyAdded();
 
     QString s = QString::fromUtf8(EncodeBase58(newPair.first.data(),
                                                newPair.first.data() + newPair.first.size()).c_str());
