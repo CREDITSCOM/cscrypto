@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cinttypes>
+#include <utility>
 
 namespace cscrypto {
 namespace keys_derivation {
@@ -15,10 +16,11 @@ const size_t kSeedContextSize = crypto_kdf_CONTEXTBYTES;
 using KeyId = uint64_t;
 using MasterSeed = MemGuard<cscrypto::Byte, kMasterSeedSize>;
 using Context = std::array<const char, kSeedContextSize>;
+using KeyPair = std::pair<PublicKey, PrivateKey>;
 
 MasterSeed generateMaterSeed();
 
-PrivateKey derivePrivateKey(MasterSeed&, KeyId, const Context& ctx = {0});
+KeyPair deriveKeyPair(MasterSeed&, KeyId, const Context& ctx = {0});
 
 void accessMasterSeed(MasterSeed&);
 void lockMasterSeed(MasterSeed&);

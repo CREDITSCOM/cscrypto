@@ -9,7 +9,7 @@
 namespace cscrypto {
 namespace gui {
 
-using KeyPair = std::pair<cscrypto::PublicKey, cscrypto::PrivateKey>;
+using KeyPair = cscrypto::keys_derivation::KeyPair;
 
 } // namespace gui
 } // namespace cscrypto

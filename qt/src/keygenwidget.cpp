@@ -331,9 +331,7 @@ void KeyGenWidget::handlePrivKeyLine() {
 }
 
 void KeyGenWidget::genKeyPair() {
-    KeyPair newPair;
-    newPair.second = cscrypto::keys_derivation::derivePrivateKey(masterSeed_, nextKeyId_++);
-    newPair.first = cscrypto::getMatchingPublic(newPair.second);
+    KeyPair newPair = cscrypto::keys_derivation::deriveKeyPair(masterSeed_, nextKeyId_++);
     keys_.push_back(newPair);
     emit newKeyAdded();
 
