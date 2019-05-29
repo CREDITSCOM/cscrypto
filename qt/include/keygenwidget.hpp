@@ -34,9 +34,7 @@ private:
     void fillKeyListLayout(QLayout*);
     void fillMainLowLayout(QLayout*);
 
-    void setupSeedDia();
     void setupTypeSeedDia();
-
     void setSeedOnMsBox();
     void disableKeyGen();
 
@@ -53,7 +51,6 @@ private:
     void genKeyPair();
     void genPublicFromPrivateDialog();
 
-    QDialog* seedGenDialog_;
     QDialog* typeSeedDialog_;
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
@@ -65,7 +62,6 @@ private:
     cscrypto::keys_derivation::KeyId nextKeyId_;
     std::vector<KeyPair>& keys_;
 };
-
 } // namespace gui
 } // namespace cscrypto
 #endif // KEYGEN_WIDGET_HPP

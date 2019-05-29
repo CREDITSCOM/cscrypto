@@ -43,12 +43,12 @@ KeyGenWidget::KeyGenWidget(QStatusBar& statusBar,
                            std::vector<KeyPair>& keys,
                            QWidget* parent)
         : QWidget(parent),
-          seedGenDialog_(new QDialog(this)),
           typeSeedDialog_(new QDialog(this)),
+          seedMsBox_(new QMessageBox(this)),
           statusBar_(statusBar),
           nextKeyId_(0),
           keys_(keys) {
-    setupSeedDia();
+    seedMsBox_->setWindowTitle(tr("Seed phrase"));
     setupTypeSeedDia();
     tuneLayouts();
 }
@@ -98,10 +98,25 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
     l->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
                                QSizePolicy::Policy::Minimum));
 
-    QPushButton* b1 = new QPushButton(this);
-    b1->setText(tr("Dump key to file"));
+    QPushButton* b1 = new QPushButton(tr("Dump key"), this);
     b1->setEnabled(false);
+
+    QPushButton* b2 = new QPushButton(tr("Dump seed"), this);
+    b2->setEnabled(false);
+
+    QPushButton* b3 = new QPushButton(tr("Show seed"), this);
+    b3->setEnabled(false);
+
+    l->addWidget(b3);
+    l->addWidget(b2);
     l->addWidget(b1);
+
+    connect(b3, &QPushButton::clicked, this, &KeyGenWidget::setSeedOnMsBox);
+    connect(b3, &QPushButton::clicked, seedMsBox_, &QMessageBox::show);
+    connect(this, &KeyGenWidget::enableKeyGen, b3, &QPushButton::setEnabled);
+
+    connect(b2, &QPushButton::clicked, this, &KeyGenWidget::saveSeedToFile);
+    connect(this, &KeyGenWidget::enableKeyGen, b2, &QPushButton::setEnabled);
 
     connect(keysList_, &QListWidget::itemClicked, b1, &QPushButton::setEnabled);
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::dumpKeysToFile);
@@ -142,7 +157,6 @@ void KeyGenWidget::fillSeedLayout(QLayout* l) {
     QPushButton* b1 = new QPushButton(this);
     b1->setText(tr("generate new seed"));
     l->addWidget(b1);
-    connect(b1, &QPushButton::clicked, seedGenDialog_, &QDialog::show);
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::genNewSeed);
 
     QPushButton* b2 = new QPushButton(this);
@@ -339,34 +353,8 @@ inline QString KeyGenWidget::getSeedString() {
     return res;
 }
 
-void KeyGenWidget::setupSeedDia() {
-    seedGenDialog_->setWindowTitle(tr("New seed generation"));
-    QVBoxLayout* l = new QVBoxLayout();
-    seedGenDialog_->setLayout(l);
-    QLabel* label = new QLabel(seedGenDialog_);
-    label->setText(tr("New master seed has been successfully generated! Save it to restore your keys in future."));
-    l->addWidget(label);
-
-    QHBoxLayout* l1 = new QHBoxLayout();
-    l->addLayout(l1);
-
-    seedMsBox_ = new QMessageBox(seedGenDialog_);
-    seedMsBox_->setWindowTitle(tr("Seed phrase"));
-
-    QPushButton* b1 = new QPushButton(seedGenDialog_);
-    b1->setText(tr("Show seed"));
-    l1->addWidget(b1);
-    connect(b1, &QPushButton::clicked, this, &KeyGenWidget::setSeedOnMsBox);
-    connect(b1, &QPushButton::clicked, seedMsBox_, &QMessageBox::show);
-
-    QPushButton* b2 = new QPushButton(seedGenDialog_);
-    b2->setText(tr("Save in file"));
-    l1->addWidget(b2);
-    connect(b2, &QPushButton::clicked, this, &KeyGenWidget::saveSeedToFile);
-}
-
 void KeyGenWidget::saveSeedToFile() {
-    QString fileName = QFileDialog::getSaveFileName(seedGenDialog_,
+    QString fileName = QFileDialog::getSaveFileName(this,
                                                     tr("Choose file to save seed phrase"), "",
                                                     tr("seed phrase(*.txt)"));
     if (fileName.isEmpty()) {
@@ -381,6 +369,7 @@ void KeyGenWidget::saveSeedToFile() {
         }
         QTextStream out(&f);
         out << getSeedString();
+        toStatusBar(statusBar_, tr("Seed saved to file."));
     }
 }
 
@@ -388,6 +377,7 @@ void KeyGenWidget::genNewSeed() {
     masterSeed_ = cscrypto::keys_derivation::generateMaterSeed();
     emit enableNewSeed(false);
     emit enableKeyGen(true);
+    toStatusBar(statusBar_, tr("New seed has been generated! Save it to restore your keys in future."));
 }
 
 inline void KeyGenWidget::setSeedOnMsBox() {
