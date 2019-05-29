@@ -11,11 +11,14 @@ MasterSeed generateMaterSeed() {
 }
 
 PrivateKey derivePrivateKey(MasterSeed& seed, KeyId id, const Context& ctx) {
-    MemGuard<Byte, kPrivateKeySize> subkey;
+    MemGuard<Byte, crypto_sign_SEEDBYTES> subkey;
     sodium_mprotect_readonly(seed.data());
-    crypto_kdf_derive_from_key(subkey.data(), kPrivateKeySize, id, ctx.data(), seed.data());
+    crypto_kdf_derive_from_key(subkey.data(), subkey.size(), id, ctx.data(), seed.data());
     sodium_mprotect_noaccess(seed.data());
-    return PrivateKey::readFromBytes(subkey);
+    PublicKey pk;
+    MemGuard<Byte, kPrivateKeySize> sk;
+    crypto_sign_seed_keypair(pk.data(), sk.data(), subkey.data());
+    return PrivateKey::readFromBytes(sk);
 }
 
 void accessMasterSeed(MasterSeed& seed) {
