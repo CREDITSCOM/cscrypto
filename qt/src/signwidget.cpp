@@ -94,23 +94,22 @@ void SignWidget::activateVerificationMode() {
     emit enableSigning(false);
     emit enableVerification(true);
     emit canSign(false);
+    emit canVerify(true);
+    insertVerificationKey();
 }
 
 void SignWidget::fillKeysLayout(QLayout* l) {
     QPushButton* chooseKeyBtn = new QPushButton(tr("Choose signing key"), this);
-    QPushButton* typePubBtn = new QPushButton(tr("Insert verification key"), this);
     l->addWidget(chooseKeyBtn);
-    l->addWidget(typePubBtn);
+    l->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
+                               QSizePolicy::Policy::Minimum));
     chooseKeyBtn->setEnabled(false);
-    typePubBtn->setEnabled(false);
     connect(this, &SignWidget::enableSigning, chooseKeyBtn, &QPushButton::setEnabled);
-    connect(this, &SignWidget::enableVerification, typePubBtn, &QPushButton::setEnabled);
     connect(chooseKeyBtn, &QPushButton::clicked, this, &SignWidget::chooseSigningKey);
-    connect(typePubBtn, &QPushButton::clicked, this, &SignWidget::insertVerificationKey);
 }
 
 void SignWidget::insertVerificationKey() {
-    operatingKeyLine_->setText(tr("Insert public key to verify signature here..."));
+    operatingKeyLine_->setText(tr("Insert public key to verify signature..."));
     emit canVerify(true);
 }
 
