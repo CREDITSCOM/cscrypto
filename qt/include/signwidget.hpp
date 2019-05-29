@@ -42,7 +42,9 @@ private:
     void chooseSigningKey();
     void setSigningKey();
     void signMsg();
+    void verifySignature();
     void addNewKey();
+    void insertVerificationKey();
 
     void activateSignMode();
     void activateVerificationMode();

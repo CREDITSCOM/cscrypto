@@ -76,6 +76,8 @@ void SignWidget::fillModeLayout(QLayout* l) {
 }
 
 void SignWidget::activateSignMode() {
+    operatingKeyLine_->clear();
+    signatureLine_->clear();
     if (keys_.empty()) {
         toStatusBar(statusBar_, tr("Sign mode activated. No private keys! Generate first!"));
     }
@@ -104,6 +106,12 @@ void SignWidget::fillKeysLayout(QLayout* l) {
     connect(this, &SignWidget::enableSigning, chooseKeyBtn, &QPushButton::setEnabled);
     connect(this, &SignWidget::enableVerification, typePubBtn, &QPushButton::setEnabled);
     connect(chooseKeyBtn, &QPushButton::clicked, this, &SignWidget::chooseSigningKey);
+    connect(typePubBtn, &QPushButton::clicked, this, &SignWidget::insertVerificationKey);
+}
+
+void SignWidget::insertVerificationKey() {
+    operatingKeyLine_->setText(tr("Insert public key to verify signature here..."));
+    emit canVerify(true);
 }
 
 void SignWidget::chooseSigningKey() {
@@ -150,6 +158,7 @@ void SignWidget::fillMiddleLayout(QLayout* l) {
     signatureLine_ = new QLineEdit(this);
 
     connect(this, &SignWidget::enableSigning, signatureLine_, &QLineEdit::setReadOnly);
+    connect(this, &SignWidget::enableSigning, operatingKeyLine_, &QLineEdit::setReadOnly);
 
     l->addWidget(operatingKeyLine_);
     l->addWidget(signingMsg_);
@@ -167,6 +176,7 @@ void SignWidget::fillLowLayout(QLayout* l) {
     connect(this, &SignWidget::canSign, signBtn, &QPushButton::setEnabled);
     connect(this, &SignWidget::canVerify, verifyBtn, &QPushButton::setEnabled);
     connect(signBtn, &QPushButton::clicked, this, &SignWidget::signMsg);
+    connect(verifyBtn, &QPushButton::clicked, this, &SignWidget::verifySignature);
 }
 
 void SignWidget::signMsg() {
@@ -179,6 +189,39 @@ void SignWidget::signMsg() {
                                                  reinterpret_cast<cscrypto::Byte*>(msg.data()), msg.size());
     signatureLine_->setText(QString::fromUtf8(EncodeBase58(signature.data(), signature.data() + signature.size()).c_str()));
     toStatusBar(statusBar_, tr("Message signed. New signature has been generated."));
+}
+
+void SignWidget::verifySignature() {
+    auto signature = signatureLine_->text().toStdString();
+    if (signature.empty()) {
+        toStatusBar(statusBar_, tr("No singature to verify! Insert signature first!"));
+        return;
+    }
+    auto msg = signingMsg_->toPlainText().toStdString();
+    if (msg.empty()) {
+        toStatusBar(statusBar_, tr("Message is empty! Nothing to verify!"));
+        return;
+    }
+    auto key = operatingKeyLine_->text().toStdString();
+    if (key.empty()) {
+        toStatusBar(statusBar_, tr("No public key provided! Insert verification key firts!"));
+    }
+    std::vector<uint8_t> sigBytes;
+    if (!DecodeBase58(signature, sigBytes) || sigBytes.size() != cscrypto::kSignatureSize) {
+        toStatusBar(statusBar_, tr("Incorrect signature!"));
+        return;
+    }
+    std::vector<uint8_t> keyBytes;
+    if (!DecodeBase58(key, keyBytes) || keyBytes.size() != cscrypto::kPublicKeySize) {
+        toStatusBar(statusBar_, tr("Incorrect signature!"));
+        return;
+    }
+    if (cscrypto::verifySignature(sigBytes.data(), keyBytes.data(),
+                                  reinterpret_cast<cscrypto::Byte*>(msg.data()), msg.size())) {
+        toStatusBar(statusBar_, tr("Correct signature!"));
+        return;
+    }
+    toStatusBar(statusBar_, tr("Incorrect signature!"));
 }
 } // namespace gui
 } // namespace cscrypto
