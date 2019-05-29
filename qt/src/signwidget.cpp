@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QDialog>
 #include <QListWidget>
+#include <QLineEdit>
 
 #include <utils.hpp>
 #include <keygenwidget.hpp>
@@ -83,12 +84,14 @@ void SignWidget::activateSignMode() {
     }
     emit enableSigning(true);
     emit enableVerification(false);
+    emit canVerify(false);
 }
 
 void SignWidget::activateVerificationMode() {
     toStatusBar(statusBar_, tr("Verification mode activated."));
     emit enableSigning(false);
     emit enableVerification(true);
+    emit canSign(false);
 }
 
 void SignWidget::fillKeysLayout(QLayout* l) {
@@ -109,21 +112,49 @@ void SignWidget::chooseSigningKey() {
         return;
     }
     QDialog* choosingKeyDialog = new QDialog(this);
+    choosingKeyDialog->setWindowTitle(tr("Singing key selecting"));
     QVBoxLayout* mainLayout = new QVBoxLayout();
     QHBoxLayout* lowLayout = new QHBoxLayout();
+
+    QLabel* lbl = new QLabel(tr("Available signing keys:"), choosingKeyDialog);
+    mainLayout->addWidget(lbl);
     mainLayout->addWidget(keysList_);
     keysList_->show();
 
+    lowLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
+                                       QSizePolicy::Policy::Minimum));
+    QPushButton* ok = new QPushButton(tr("Ok"), choosingKeyDialog);
+    ok->setEnabled(false);
+
+    connect(keysList_, &QListWidget::itemClicked, ok, &QPushButton::setEnabled);
+    connect(ok, &QPushButton::clicked, this, &SignWidget::setSigningKey);
+    connect(ok, &QPushButton::clicked, choosingKeyDialog, &QDialog::close);
+
+    lowLayout->addWidget(ok);
     mainLayout->addLayout(lowLayout);
     choosingKeyDialog->setLayout(mainLayout);
     choosingKeyDialog->show();
 }
 
+void SignWidget::setSigningKey() {
+    operatingKeyLine_->setText(keysList_->currentItem()->text());
+    toStatusBar(statusBar_, tr("New operating key has been selected."));
+    emit canSign(true);
+}
+
 void SignWidget::fillMiddleLayout(QLayout* l) {
-    QLabel* lbl = new QLabel(tr("Operating key:"), this);
-    QTextEdit* signingMsg = new QTextEdit(tr("Type message to sign or verify..."));
-    l->addWidget(lbl);
-    l->addWidget(signingMsg);
+    operatingKeyLine_ = new QLineEdit(tr("Operating key will be displayed here"), this);
+    operatingKeyLine_->setReadOnly(true);
+    signingMsg_ = new QTextEdit(tr("Type message to sign or verify..."));
+    QLabel* lbl1 = new QLabel(tr("Signature:"), this);
+    signatureLine_ = new QLineEdit(this);
+
+    connect(this, &SignWidget::enableSigning, signatureLine_, &QLineEdit::setReadOnly);
+
+    l->addWidget(operatingKeyLine_);
+    l->addWidget(signingMsg_);
+    l->addWidget(lbl1);
+    l->addWidget(signatureLine_);
 }
 
 void SignWidget::fillLowLayout(QLayout* l) {
@@ -135,6 +166,19 @@ void SignWidget::fillLowLayout(QLayout* l) {
     verifyBtn->setEnabled(false);
     connect(this, &SignWidget::canSign, signBtn, &QPushButton::setEnabled);
     connect(this, &SignWidget::canVerify, verifyBtn, &QPushButton::setEnabled);
+    connect(signBtn, &QPushButton::clicked, this, &SignWidget::signMsg);
+}
+
+void SignWidget::signMsg() {
+    auto msg = signingMsg_->toPlainText().toStdString();
+    if (msg.empty()) {
+        toStatusBar(statusBar_, tr("Signing message is empty! Type it."));
+        return;
+    }
+    auto signature = cscrypto::generateSignature(keys_[size_t(keysList_->currentRow())].second,
+                                                 reinterpret_cast<cscrypto::Byte*>(msg.data()), msg.size());
+    signatureLine_->setText(QString::fromUtf8(EncodeBase58(signature.data(), signature.data() + signature.size()).c_str()));
+    toStatusBar(statusBar_, tr("Message signed. New signature has been generated."));
 }
 } // namespace gui
 } // namespace cscrypto

@@ -9,6 +9,8 @@ class QStatusBar;
 class QLayout;
 class QString;
 class QListWidget;
+class QLineEdit;
+class QTextEdit;
 
 namespace cscrypto {
 namespace gui {
@@ -38,6 +40,8 @@ private:
     void fillLowLayout(QLayout*);
 
     void chooseSigningKey();
+    void setSigningKey();
+    void signMsg();
     void addNewKey();
 
     void activateSignMode();
@@ -47,6 +51,9 @@ private:
 
     QStatusBar& statusBar_;
     std::vector<KeyPair>& keys_;
+    QLineEdit* operatingKeyLine_;
+    QTextEdit* signingMsg_;
+    QLineEdit* signatureLine_;
 };
 } // namespace gui
 } // namespace cscrypto
