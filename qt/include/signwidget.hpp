@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <string>
+
 #include <common.hpp>
 
 class QStatusBar;
@@ -11,6 +13,8 @@ class QString;
 class QListWidget;
 class QLineEdit;
 class QTextEdit;
+class QPushButton;
+class QLabel;
 
 namespace cscrypto {
 namespace gui {
@@ -45,9 +49,11 @@ private:
     void verifySignature();
     void addNewKey();
     void insertVerificationKey();
+    void loadDataFromFile();
 
     void activateSignMode();
     void activateVerificationMode();
+    void activateFileMode(int);
 
     QListWidget* keysList_;
 
@@ -56,6 +62,10 @@ private:
     QLineEdit* operatingKeyLine_;
     QTextEdit* signingMsg_;
     QLineEdit* signatureLine_;
+    QPushButton* loadFileBtn_;
+    std::string fileHash_;
+    QLabel* fileName_;
+    bool fileMode_;
 };
 } // namespace gui
 } // namespace cscrypto

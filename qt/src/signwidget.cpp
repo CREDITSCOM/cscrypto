@@ -12,11 +12,17 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QLineEdit>
+#include <QCheckBox>
+#include <QFileDialog>
 
 #include <utils.hpp>
 #include <keygenwidget.hpp>
 
 #include <base58.h>
+
+#include <fstream>
+#include <sstream>
+#include <algorithm>
 
 namespace cscrypto {
 namespace gui {
@@ -28,7 +34,8 @@ SignWidget::SignWidget(QStatusBar& statusBar,
         : QWidget(parent),
           keysList_(new QListWidget(this)),
           statusBar_(statusBar),
-          keys_(keys) {
+          keys_(keys),
+          fileMode_(false) {
     keysList_->hide();
     connect(keyGenerator, &KeyGenWidget::newKeyAdded, this, &SignWidget::addNewKey);
     tuneLayouts();
@@ -103,9 +110,32 @@ void SignWidget::fillKeysLayout(QLayout* l) {
     l->addWidget(chooseKeyBtn);
     l->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
                                QSizePolicy::Policy::Minimum));
+    QCheckBox* fileModeChekBox = new QCheckBox(tr("File mode"), this);
+    l->addWidget(fileModeChekBox);
     chooseKeyBtn->setEnabled(false);
     connect(this, &SignWidget::enableSigning, chooseKeyBtn, &QPushButton::setEnabled);
     connect(chooseKeyBtn, &QPushButton::clicked, this, &SignWidget::chooseSigningKey);
+    connect(fileModeChekBox, &QCheckBox::stateChanged, this, &SignWidget::activateFileMode);
+}
+
+void SignWidget::activateFileMode(int value) {
+    switch (value) {
+        case Qt::Unchecked :
+            signingMsg_->show();
+            loadFileBtn_->hide();
+            fileName_->hide();
+            fileMode_ = false;
+            toStatusBar(statusBar_, tr("File mode deactivated. Type message to sign/verify."));
+            break;
+        case Qt::Checked :
+            signingMsg_->hide();
+            loadFileBtn_->show();
+            fileName_->show();
+            fileMode_ = true;
+            toStatusBar(statusBar_, tr("File mode activated. Load file to sign/verify."));
+            break;
+        case Qt::PartiallyChecked : break;
+    }
 }
 
 void SignWidget::insertVerificationKey() {
@@ -155,14 +185,46 @@ void SignWidget::fillMiddleLayout(QLayout* l) {
     signingMsg_ = new QTextEdit(tr("Type message to sign or verify..."));
     QLabel* lbl1 = new QLabel(tr("Signature:"), this);
     signatureLine_ = new QLineEdit(this);
+    loadFileBtn_ = new QPushButton(tr("Load file to sing/verify"));
+    loadFileBtn_->hide();
+    fileName_ = new QLabel(tr("No file loaded."), this);
+    fileName_->hide();
 
     connect(this, &SignWidget::enableSigning, signatureLine_, &QLineEdit::setReadOnly);
     connect(this, &SignWidget::enableSigning, operatingKeyLine_, &QLineEdit::setReadOnly);
+    connect(loadFileBtn_, &QPushButton::clicked, this, &SignWidget::loadDataFromFile);
 
     l->addWidget(operatingKeyLine_);
     l->addWidget(signingMsg_);
+    l->addWidget(loadFileBtn_);
+    l->addWidget(fileName_);
+
+    l->addItem(new QSpacerItem(0,0, QSizePolicy::Policy::Minimum,
+                               QSizePolicy::Policy::Expanding));
     l->addWidget(lbl1);
     l->addWidget(signatureLine_);
+}
+
+void SignWidget::loadDataFromFile() {
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Choose file to sign/verify signature"));
+    if (fileName.isEmpty()) {
+        toStatusBar(statusBar_, tr("File was not selected!"));
+        return;
+    }
+    std::ifstream f(fileName.toStdString());
+    if (!f.is_open()) {
+        toStatusBar(statusBar_, tr("Unable to open file!"));
+        return;
+    }
+    std::stringstream ss;
+    ss << f.rdbuf();
+    auto data = ss.str();
+    auto hash = cscrypto::calculateHash(reinterpret_cast<cscrypto::Byte*>(data.data()), data.size());
+    fileHash_.resize(hash.size());
+    std::copy(fileHash_.begin(), fileHash_.end(), hash.begin());
+    toStatusBar(statusBar_, tr("File was loaded!"));
+    fileName_->setText(fileName);
 }
 
 void SignWidget::fillLowLayout(QLayout* l) {
@@ -179,7 +241,13 @@ void SignWidget::fillLowLayout(QLayout* l) {
 }
 
 void SignWidget::signMsg() {
-    auto msg = signingMsg_->toPlainText().toStdString();
+    std::string msg;
+    if (fileMode_) {
+        msg = fileHash_;
+    }
+    else {
+        msg = signingMsg_->toPlainText().toStdString();
+    }
     if (msg.empty()) {
         toStatusBar(statusBar_, tr("Signing message is empty! Type it."));
         return;
@@ -196,7 +264,13 @@ void SignWidget::verifySignature() {
         toStatusBar(statusBar_, tr("No singature to verify! Insert signature first!"));
         return;
     }
-    auto msg = signingMsg_->toPlainText().toStdString();
+    std::string msg;
+    if (fileMode_) {
+        msg = fileHash_;
+    }
+    else {
+        msg = signingMsg_->toPlainText().toStdString();
+    }
     if (msg.empty()) {
         toStatusBar(statusBar_, tr("Message is empty! Nothing to verify!"));
         return;
