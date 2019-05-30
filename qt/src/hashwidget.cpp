@@ -92,6 +92,7 @@ void HashWidget::activateHmac(int status) {
             emit hmac(true);
             toStatusBar(statusBar_, tr("HMAC mode activated. You may hash data with key."));
             hmacKeyLineEdit_->setEnabled(true);
+            hmacKeyLineEdit_->setText(tr("Insert HMAC key..."));
             break;
         case Qt::Unchecked :
             hmacMode_ = false;
