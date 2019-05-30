@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(Cscrypto_Qt)
 
+if(WIN32)
+  set(GUI_TYPE WIN32)
+endif(WIN32)
+
 set(HEADERS
   include/mainwidget.hpp
   include/keygenwidget.hpp
@@ -11,10 +15,10 @@ set(HEADERS
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
 qt5_add_resources(
-    QRC_WRAPPERS cscrypto_qt.qrc
-    OPTIONS -no-compress)
+  QRC_WRAPPERS cscrypto_qt.qrc
+  OPTIONS -no-compress)
 
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/main.cpp
   src/mainwidget.cpp
   src/keygenwidget.cpp
