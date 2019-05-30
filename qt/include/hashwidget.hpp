@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+class QStatusBar;
+class QLayout;
+class QTextEdit;
+
 namespace cscrypto {
 namespace gui {
 
@@ -10,7 +14,25 @@ class HashWidget : public QWidget {
     Q_OBJECT
 
 public:
-    HashWidget(QWidget* parent = nullptr);
+    HashWidget(QStatusBar&, QWidget* parent = nullptr);
+
+signals:
+    void messageModeActivated(bool);
+    void fileModeActivated(bool);
+    void hmac(bool);
+
+private:
+    void tuneLayouts();
+    void fillModeLayout(QLayout*);
+    void fillSettingsLayout(QLayout*);
+    void fillMiddleLayout(QLayout*);
+
+    void activateMessageMode();
+    void activateFileMode();
+    void activateHmac(int);
+
+    QStatusBar& statusBar_;
+    QTextEdit* hashingMsg_;
 };
 
 } // namespace gui
