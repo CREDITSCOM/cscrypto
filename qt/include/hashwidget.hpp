@@ -3,9 +3,14 @@
 
 #include <QWidget>
 
+#include <vector>
+#include <cinttypes>
+
 class QStatusBar;
 class QLayout;
 class QTextEdit;
+class QLineEdit;
+class QLabel;
 
 namespace cscrypto {
 namespace gui {
@@ -20,6 +25,7 @@ signals:
     void messageModeActivated(bool);
     void fileModeActivated(bool);
     void hmac(bool);
+    void canHash(bool);
 
 private:
     void tuneLayouts();
@@ -31,8 +37,19 @@ private:
     void activateFileMode();
     void activateHmac(int);
 
+    void loadHashingFile();
+
+    void calculateHash();
+
     QStatusBar& statusBar_;
     QTextEdit* hashingMsg_;
+    QLineEdit* hmacKeyLineEdit_;
+    QLineEdit* genHashLineEdit_;
+    QLabel* loadedFileName_;
+
+    std::vector<uint8_t> hashingData_;
+    bool fileMode_;
+    bool hmacMode_;
 };
 
 } // namespace gui
