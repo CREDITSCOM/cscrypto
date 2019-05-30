@@ -26,6 +26,8 @@ MainWidget::MainWidget(QWidget* parent)
     mainLayout->addWidget(statusBar_);
 
     setLayout(mainLayout);
+
+    setWindowIcon(QIcon(":/resources/cs.png"));
 }
 
 void MainWidget::fillTabs() {

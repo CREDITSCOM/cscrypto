@@ -10,6 +10,10 @@ set(HEADERS
   include/cipherwidget.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
+qt5_add_resources(
+    QRC_WRAPPERS cscrypto_qt.qrc
+    OPTIONS -no-compress)
+
 add_executable(${PROJECT_NAME}
   src/main.cpp
   src/mainwidget.cpp
@@ -20,7 +24,8 @@ add_executable(${PROJECT_NAME}
   include/common.hpp
   include/utils.hpp
   ${HEADERS}
-  ${MOC_FILES})
+  ${MOC_FILES}
+  ${QRC_WRAPPERS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   
