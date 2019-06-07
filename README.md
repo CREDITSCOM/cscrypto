@@ -18,13 +18,40 @@ Cscrypto is credits company's crypto library supporting:
  - keys recovery from mnemonic phrase
 
 ## Building from source
-For production release:
+
+Basic requirements :
+ - cmake 3.10 or newer
+ - compiler with C++17 support
+
+Windows:
 ```sh
-$ git clone https://github.com/CREDITSCOM/cscrypto.git
-$ cd cscrypto
-$ mkdir build && cd build
-$ cmake -DCMAKE_BUILD_TYPE=Release -A x64 ..
-$ make
+ git clone https://github.com/CREDITSCOM/cscrypto.git
+ cd cscrypto
+ mkdir build
+ cd build
+ cmake -DCMAKE_BUILD_TYPE=Release -A x64 ..
+ cmake --build . --target ALL_BUILD --config Release
+```
+
+Unix:
+```sh
+ $ git clone https://github.com/CREDITSCOM/cscrypto.git
+ $ cd cscrypto
+ $ mkdir build && cd build
+ $ cmake -DCMAKE_BUILD_TYPE=Release ..
+ $ make
+```
+
+Ubuntu & Debian
+
+Additional requirements:
+```sh
+ $ sudo apt-get install libtool autoconf
+```
+
+To build with gui:
+```sh
+ $ sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
 ```
 
 <h2>Contribution</h2>
