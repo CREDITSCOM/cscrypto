@@ -19,11 +19,11 @@ Cscrypto is credits company's crypto library supporting:
 
 ## Building from source
 
-Basic requirements :
+### Basic requirements :
  - cmake 3.10 or newer
  - compiler with C++17 support
 
-Windows:
+### Windows:
 ```sh
  git clone https://github.com/CREDITSCOM/cscrypto.git
  cd cscrypto
@@ -33,7 +33,7 @@ Windows:
  cmake --build . --target ALL_BUILD --config Release
 ```
 
-Unix:
+### Unix:
 ```sh
  $ git clone https://github.com/CREDITSCOM/cscrypto.git
  $ cd cscrypto
@@ -42,16 +42,28 @@ Unix:
  $ make
 ```
 
-Ubuntu & Debian
+#### Ubuntu & Debian
 
-Additional requirements:
+Build requirements:
 ```sh
- $ sudo apt-get install libtool autoconf
+ $ sudo apt-get install build-essential libtool autoconf
 ```
 
 To build with gui:
 ```sh
  $ sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+```
+
+#### Fedora
+
+Build requirements:
+```sh
+ $ sudo dnf install gcc-c++ libtool make autoconf
+```
+
+To build with gui:
+```sh
+ $ sudo dnf install qt5-qttools-devel qt5-qtbase-devel protobuf-devel
 ```
 
 <h2>Contribution</h2>
