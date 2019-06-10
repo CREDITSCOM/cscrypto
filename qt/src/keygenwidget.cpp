@@ -122,31 +122,33 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::dumpKeysToFile);
 }
 
-void KeyGenWidget::dumpKeysToFile() {
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Choose file to dump keys"), "",
-                                                    tr("key file(*.json)"));
-    if (fileName.isEmpty()) {
-        toStatusBar(statusBar_, tr("File was not selected!"));
-        return;
-    }
-    QFile f(fileName);
-    if (!f.open(QIODevice::WriteOnly)) {
-        toStatusBar(statusBar_, tr("Unable to open file!"));
-        return;
-    }
+void KeyGenWidget::setupEncDialog(QDialog* d) {
+    d->setWindowTitle("Private data encryption");
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    QLabel* lbl = new QLabel(tr("You are strongly recommended to encrypt this data before dump it to file!"), d);
+    encryptionPswdLineEdit_ = new QLineEdit(tr("Type password for encryption..."));
+    QHBoxLayout* keysLayout = new QHBoxLayout;
+    QPushButton* encBtn = new QPushButton(tr("Dump encrypted"), d);
+    QPushButton* clearBtn = new QPushButton(tr("Dump clear"), d);
+    keysLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    keysLayout->addWidget(clearBtn);
+    keysLayout->addWidget(encBtn);
 
-    auto keyPair = keys_[size_t(keysList_->currentRow())];
-    QString s = "{\"key\":{\"public\":\"";
-    s += QString::fromUtf8(EncodeBase58(keyPair.first.data(),
-                                        keyPair.first.data() + keyPair.first.size()).c_str());
-    s += "\",\"private\":\"";
-    auto sk = keyPair.second.access();
-    s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
-    s += "\"}}";
-    QTextStream out(&f);
-    out << s;
-    toStatusBar(statusBar_, tr("Keys have been saved to file."));
+    mainLayout->addWidget(lbl);
+    mainLayout->addWidget(encryptionPswdLineEdit_);
+    mainLayout->addLayout(keysLayout);
+    d->setLayout(mainLayout);
+
+    connect(encBtn, &QPushButton::clicked, d, &QDialog::accept);
+    connect(clearBtn, &QPushButton::clicked, d, &QDialog::reject);
+}
+
+void KeyGenWidget::dumpKeysToFile() {
+    QDialog* encDialog = new QDialog(this);
+    setupEncDialog(encDialog);
+    encDialog->show();
+    connect(encDialog, &QDialog::accepted, this, &KeyGenWidget::DumpKeysEncrypted);
+    connect(encDialog, &QDialog::rejected, this, &KeyGenWidget::DumpKeysClear);
 }
 
 void KeyGenWidget::fillSeedLayout(QLayout* l) {
@@ -352,23 +354,12 @@ inline QString KeyGenWidget::getSeedString() {
 }
 
 void KeyGenWidget::saveSeedToFile() {
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Choose file to save seed phrase"), "",
-                                                    tr("seed phrase(*.txt)"));
-    if (fileName.isEmpty()) {
-        toStatusBar(statusBar_, tr("File was not selected!"));
-        return;
-    }
-    else {
-        QFile f(fileName);
-        if (!f.open(QIODevice::WriteOnly)) {
-            toStatusBar(statusBar_, tr("Unable to open file!"));
-            return;
-        }
-        QTextStream out(&f);
-        out << getSeedString();
-        toStatusBar(statusBar_, tr("Seed saved to file."));
-    }
+    QFile f;
+    if (!openFileForWriting(f)) return;
+
+    QTextStream out(&f);
+    out << getSeedString();
+    toStatusBar(statusBar_, tr("Seed saved to file."));
 }
 
 void KeyGenWidget::genNewSeed() {
@@ -386,6 +377,60 @@ inline void KeyGenWidget::setSeedOnMsBox() {
 void KeyGenWidget::disableKeyGen() {
     emit enableNewSeed(true);
     emit enableKeyGen(false);
+}
+
+bool KeyGenWidget::openFileForWriting(QFile& f) {
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Choose file to dump data"), "");
+    if (fileName.isEmpty()) {
+        toStatusBar(statusBar_, tr("File was not selected!"));
+        return false;
+    }
+    f.setFileName(fileName);
+    if (!f.open(QIODevice::WriteOnly)) {
+        toStatusBar(statusBar_, tr("Unable to open file!"));
+        return false;
+    }
+    return true;
+}
+
+void KeyGenWidget::DumpKeysEncrypted() {
+    QFile f;
+    if (!openFileForWriting(f)) return;
+
+    auto keyPair = keys_[size_t(keysList_->currentRow())];
+    QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
+                                               keyPair.first.data() + keyPair.first.size()).c_str());
+    s += "\n";
+    auto sk = keyPair.second.access();
+    std::string pswd = encryptionPswdLineEdit_->text().toStdString();
+    if (pswd.empty()) {
+        s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
+        toStatusBar(statusBar_, tr("Keys have been saved to file. Password empty! Private key unencrypted!"));
+    }
+    else {
+        auto encBytes = EncodeBase58(keyPair.second.getEncrypted(pswd.c_str(), pswd.size()));
+        s += QString::fromUtf8(encBytes.c_str());
+        toStatusBar(statusBar_, tr("Keys have been saved to file. Private key encrypted."));
+    }
+
+    QTextStream out(&f);
+    out << s;
+
+}
+
+void KeyGenWidget::DumpKeysClear() {
+    QFile f;
+    if (!openFileForWriting(f)) return;
+        auto keyPair = keys_[size_t(keysList_->currentRow())];
+    QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
+                                               keyPair.first.data() + keyPair.first.size()).c_str());
+    s += "\n";
+    auto sk = keyPair.second.access();
+    s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
+    QTextStream out(&f);
+    out << s;
+    toStatusBar(statusBar_, tr("Keys have been saved to file. Private key unencrypted!"));
 }
 } // namespace gui
 } // namespace cscrypto

@@ -12,6 +12,7 @@ class QMessageBox;
 class QLineEdit;
 class QListWidget;
 class QStatusBar;
+class QFile;
 
 namespace cscrypto {
 namespace gui {
@@ -37,6 +38,7 @@ private:
     void setupTypeSeedDia();
     void setSeedOnMsBox();
     void disableKeyGen();
+    void setupEncDialog(QDialog*);
 
     void fillMasterSeedFromString(const QString&);
     void handleInputSeed();
@@ -45,6 +47,9 @@ private:
     void saveSeedToFile();
     void loadSeedFromFile();
     void dumpKeysToFile();
+    bool openFileForWriting(QFile&);
+    void DumpKeysEncrypted();
+    void DumpKeysClear();
 
     void genNewSeed();
     QString getSeedString();
@@ -55,6 +60,7 @@ private:
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
     QLineEdit* privateKeyLineEdit_;
+    QLineEdit* encryptionPswdLineEdit_;
     QListWidget* keysList_;
     QStatusBar& statusBar_;
 
