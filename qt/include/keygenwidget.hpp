@@ -47,7 +47,6 @@ private:
     void saveSeedToFile();
     void loadSeedFromFile();
     void dumpKeysToFile();
-    bool openFileForWriting(QFile&);
     void DumpKeysEncrypted();
     void DumpKeysClear();
 

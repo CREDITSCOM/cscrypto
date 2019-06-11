@@ -239,42 +239,30 @@ void KeyGenWidget::fillMasterSeedFromString(const QString& s) {
 }
 
 void KeyGenWidget::loadSeedFromFile() {
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Choose file to load seed phrase from"), "",
-                                                    tr("seed phrase (*.txt)"));
-    if (fileName.isEmpty()) {
-        toStatusBar(statusBar_, tr("File was not selected!"));
+    QFile f;
+    if (!openFile(f, this)) {
+        toStatusBar(statusBar_, tr("File to load seed from was not opened!"));
+        return;
     }
-    else {
-        QFile f(fileName);
-        if (!f.open(QIODevice::ReadOnly)) {
-            toStatusBar(statusBar_, tr("Unable to open file!"));
-            return;
-        }
-        QTextStream in(&f);
-        fillMasterSeedFromString(in.readAll());
-    }
+    QTextStream in(&f);
+    fillMasterSeedFromString(in.readAll());
 }
 
 void KeyGenWidget::fillKeyLayout(QLayout* l) {
-    QLabel* label = new QLabel(this);
-    label->setText(tr("Keys generation:"));
+    QLabel* label = new QLabel(tr("Keys generation:"), this);
     label->setEnabled(false);
     l->addWidget(label);
 
-    QPushButton* b1 = new QPushButton(this);
-    b1->setText(tr("another seed"));
+    QPushButton* b1 = new QPushButton(tr("another seed"), this);
     b1->setEnabled(false);
     l->addWidget(b1);
 
-    QPushButton* b2 = new QPushButton(this);
-    b2->setText(tr("key pair"));
+    QPushButton* b2 = new QPushButton(tr("key pair"), this);
     b2->setEnabled(false);
     l->addWidget(b2);
     connect(b2, &QPushButton::clicked, this, &KeyGenWidget::genKeyPair);
 
-    QPushButton* b3 = new QPushButton(this);
-    b3->setText(tr("public from private"));
+    QPushButton* b3 = new QPushButton(tr("public from private"), this);
     l->addWidget(b3);
     connect(b3, &QPushButton::clicked, this, &KeyGenWidget::genPublicFromPrivateDialog);
 
@@ -355,7 +343,10 @@ inline QString KeyGenWidget::getSeedString() {
 
 void KeyGenWidget::saveSeedToFile() {
     QFile f;
-    if (!openFileForWriting(f)) return;
+    if (!openFile(f, this, true)) {
+        toStatusBar(statusBar_, tr("File to save seed was not opened!"));
+        return;
+    }
 
     QTextStream out(&f);
     out << getSeedString();
@@ -379,24 +370,12 @@ void KeyGenWidget::disableKeyGen() {
     emit enableKeyGen(false);
 }
 
-bool KeyGenWidget::openFileForWriting(QFile& f) {
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Choose file to dump data"), "");
-    if (fileName.isEmpty()) {
-        toStatusBar(statusBar_, tr("File was not selected!"));
-        return false;
-    }
-    f.setFileName(fileName);
-    if (!f.open(QIODevice::WriteOnly)) {
-        toStatusBar(statusBar_, tr("Unable to open file!"));
-        return false;
-    }
-    return true;
-}
-
 void KeyGenWidget::DumpKeysEncrypted() {
     QFile f;
-    if (!openFileForWriting(f)) return;
+    if (!openFile(f, this, true)) {
+        toStatusBar(statusBar_, tr("File to dump keys was not opened!"));
+        return;
+    }
 
     auto keyPair = keys_[size_t(keysList_->currentRow())];
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
@@ -420,7 +399,10 @@ void KeyGenWidget::DumpKeysEncrypted() {
 
 void KeyGenWidget::DumpKeysClear() {
     QFile f;
-    if (!openFileForWriting(f)) return;
+    if (!openFile(f, this, true)) {
+        toStatusBar(statusBar_, tr("File to dump keys was not opened!"));
+        return;
+    }
 
     auto keyPair = keys_[size_t(keysList_->currentRow())];
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
