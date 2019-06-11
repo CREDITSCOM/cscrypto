@@ -34,6 +34,8 @@ bool findWordInDictionary(const char* word, size_t& index) {
     }
     return found;
 }
+
+std::pair<QString, std::vector<uint8_t>> keysToDecrypt;
 } // namespace
 
 namespace cscrypto {
@@ -45,9 +47,11 @@ KeyGenWidget::KeyGenWidget(QStatusBar& statusBar,
         : QWidget(parent),
           typeSeedDialog_(new QDialog(this)),
           seedMsBox_(new QMessageBox(this)),
+          encryptionPswdLineEdit_(new QLineEdit(this)),
           statusBar_(statusBar),
           nextKeyId_(0),
           keys_(keys) {
+    encryptionPswdLineEdit_->hide();
     seedMsBox_->setWindowTitle(tr("Seed phrase"));
     setupTypeSeedDia();
     tuneLayouts();
@@ -126,7 +130,6 @@ void KeyGenWidget::setupEncDialog(QDialog* d) {
     d->setWindowTitle("Private data encryption");
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QLabel* lbl = new QLabel(tr("You are strongly recommended to encrypt this data before dump it to file!"), d);
-    encryptionPswdLineEdit_ = new QLineEdit(tr("Type password for encryption..."));
     QHBoxLayout* keysLayout = new QHBoxLayout;
     QPushButton* encBtn = new QPushButton(tr("Dump encrypted"), d);
     QPushButton* clearBtn = new QPushButton(tr("Dump clear"), d);
@@ -135,7 +138,9 @@ void KeyGenWidget::setupEncDialog(QDialog* d) {
     keysLayout->addWidget(encBtn);
 
     mainLayout->addWidget(lbl);
+    encryptionPswdLineEdit_->clear();
     mainLayout->addWidget(encryptionPswdLineEdit_);
+    encryptionPswdLineEdit_->show();
     mainLayout->addLayout(keysLayout);
     d->setLayout(mainLayout);
 
@@ -266,11 +271,88 @@ void KeyGenWidget::fillKeyLayout(QLayout* l) {
     l->addWidget(b3);
     connect(b3, &QPushButton::clicked, this, &KeyGenWidget::genPublicFromPrivateDialog);
 
+    QPushButton* b4 = new QPushButton(tr("load keys"), this);
+    l->addWidget(b4);
+    connect(b4, &QPushButton::clicked, this, &KeyGenWidget::loadKeysFromFile);
+
     connect(this, SIGNAL(enableKeyGen(bool)), label, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b1, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b2, SLOT(setEnabled(bool)));
 
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::disableKeyGen);
+}
+
+void KeyGenWidget::loadKeysFromFile() {
+    QFile f;
+    if (!openFile(f, this)) {
+        toStatusBar(statusBar_, tr("File to load keys from was not opened!"));
+        return;
+    }
+    QTextStream in(&f);
+    QString publicKey = in.readLine();
+    QString privateKey = in.readLine();
+    std::vector<uint8_t> pubBytes, privBytes;
+    if (!DecodeBase58(publicKey.toStdString(), pubBytes) || !DecodeBase58(privateKey.toStdString(), privBytes)
+        || privBytes.size() < cscrypto::kPrivateKeySize) {
+        toStatusBar(statusBar_, tr("Invalid keys!"));
+        return;
+    }
+    if (privBytes.size() == cscrypto::kPrivateKeySize) {
+        KeyPair keys;
+        keys.second = cscrypto::PrivateKey::readFromBytes(privBytes);
+        keys.first = cscrypto::getMatchingPublic(keys.second);
+        if (pubBytes != std::vector<uint8_t>(keys.first.begin(), keys.first.end())) {
+            toStatusBar(statusBar_, tr("Invalid keys!"));
+            return;
+        }
+        keys_.push_back(keys);
+        keysList_->addItem(publicKey);
+        emit newKeyAdded();
+        toStatusBar(statusBar_, tr("Loaded keys are correct. Added to your key list."));
+        return;
+    }
+    QDialog* d = new QDialog(this);
+    QVBoxLayout* layout = new QVBoxLayout;
+    QLabel* lbl = new QLabel(tr("Private key seems to be encrypted type password:"), d);
+    layout->addWidget(lbl);
+    encryptionPswdLineEdit_->clear();
+    layout->addWidget(encryptionPswdLineEdit_);
+    encryptionPswdLineEdit_->show();
+    QPushButton* b = new QPushButton(tr("Decrypt private key"), d);
+    layout->addWidget(b);
+    d->setLayout(layout);
+    d->show();
+    keysToDecrypt.first = publicKey;
+    keysToDecrypt.second = privBytes;
+
+    connect(b, &QPushButton::clicked, d, &QDialog::close);
+    connect(b, &QPushButton::clicked, this, &KeyGenWidget::decryptKeys);
+}
+
+void KeyGenWidget::decryptKeys() {
+    auto pswd = encryptionPswdLineEdit_->text();
+    if (pswd.isEmpty()) {
+        toStatusBar(statusBar_, tr("Password is empty!"));
+        return;
+    }
+
+    KeyPair keys;
+    keys.second = cscrypto::PrivateKey::readFromEncrypted(keysToDecrypt.second,
+                                                          pswd.toStdString().c_str(),
+                                                          pswd.toStdString().size());
+    if (!keys.second) {
+        toStatusBar(statusBar_, tr("Wrong password or corrupted file!"));
+        return;
+    }
+    keys.first = cscrypto::getMatchingPublic(keys.second);
+    if (keysToDecrypt.first.toStdString() != EncodeBase58(std::vector<uint8_t>(keys.first.begin(), keys.first.end()))) {
+        toStatusBar(statusBar_, tr("Incorrect key pair!"));
+        return;
+    }
+    keys_.push_back(keys);
+    emit newKeyAdded();
+    keysList_->addItem(keysToDecrypt.first);
+    toStatusBar(statusBar_, tr("Keys loaded successfully."));
 }
 
 void KeyGenWidget::genPublicFromPrivateDialog() {

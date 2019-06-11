@@ -46,6 +46,8 @@ private:
 
     void saveSeedToFile();
     void loadSeedFromFile();
+    void loadKeysFromFile();
+    void decryptKeys();
     void dumpKeysToFile();
     void DumpKeysEncrypted();
     void DumpKeysClear();
