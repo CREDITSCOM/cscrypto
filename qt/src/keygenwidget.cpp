@@ -402,9 +402,9 @@ void KeyGenWidget::DumpKeysEncrypted() {
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
                                                keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\n";
-    auto sk = keyPair.second.access();
     std::string pswd = encryptionPswdLineEdit_->text().toStdString();
     if (pswd.empty()) {
+        auto sk = keyPair.second.access();
         s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
         toStatusBar(statusBar_, tr("Keys have been saved to file. Password empty! Private key unencrypted!"));
     }
@@ -416,13 +416,13 @@ void KeyGenWidget::DumpKeysEncrypted() {
 
     QTextStream out(&f);
     out << s;
-
 }
 
 void KeyGenWidget::DumpKeysClear() {
     QFile f;
     if (!openFileForWriting(f)) return;
-        auto keyPair = keys_[size_t(keysList_->currentRow())];
+
+    auto keyPair = keys_[size_t(keysList_->currentRow())];
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
                                                keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\n";
