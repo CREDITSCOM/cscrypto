@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>resources/cs.ico</file>
         <file>resources/cs.png</file>
+        <file>resources/opened_eye.png</file>
+        <file>resources/closed_eye.png</file>
     </qresource>
 </RCC>

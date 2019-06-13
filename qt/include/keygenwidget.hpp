@@ -17,6 +17,8 @@ class QFile;
 namespace cscrypto {
 namespace gui {
 
+class PasswordLineEdit;
+
 class KeyGenWidget : public QWidget {
     Q_OBJECT
 
@@ -61,7 +63,7 @@ private:
     QMessageBox* seedMsBox_;
     QLineEdit* seedLineEdit_;
     QLineEdit* privateKeyLineEdit_;
-    QLineEdit* encryptionPswdLineEdit_;
+    PasswordLineEdit* encryptionPswdLineEdit_;
     QListWidget* keysList_;
     QStatusBar& statusBar_;
 

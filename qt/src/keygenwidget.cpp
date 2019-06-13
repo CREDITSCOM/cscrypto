@@ -21,6 +21,7 @@
 
 #include <base58.h>
 #include <utils.hpp>
+#include <passwordlineedit.hpp>
 
 namespace {
 bool findWordInDictionary(const char* word, size_t& index) {
@@ -48,7 +49,7 @@ KeyGenWidget::KeyGenWidget(QStatusBar& statusBar,
         : QWidget(parent),
           typeSeedDialog_(new QDialog(this)),
           seedMsBox_(new QMessageBox(this)),
-          encryptionPswdLineEdit_(new QLineEdit(this)),
+          encryptionPswdLineEdit_(new PasswordLineEdit(this)),
           statusBar_(statusBar),
           nextKeyId_(0),
           keys_(keys) {

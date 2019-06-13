@@ -11,7 +11,8 @@ set(HEADERS
   include/keygenwidget.hpp
   include/signwidget.hpp
   include/hashwidget.hpp
-  include/cipherwidget.hpp)
+  include/cipherwidget.hpp
+  include/passwordlineedit.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
 qt5_add_resources(
@@ -25,6 +26,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/hashwidget.cpp
   src/signwidget.cpp
   src/cipherwidget.cpp
+  src/passwordlineedit.cpp
   include/common.hpp
   include/utils.hpp
   ${HEADERS}
