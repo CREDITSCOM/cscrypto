@@ -17,11 +17,13 @@ add_library(${PROJECT_NAME} STATIC
   include/cscrypto/keysderivation.hpp
   include/cscrypto/dictionary.hpp
   include/cscrypto/mnemonic.hpp
+  include/cscrypto/cipher.hpp
   src/maincryptofunctions.cpp
   src/privatekey.cpp
   src/keysderivation.cpp
   src/dictionary_en.cpp
-  src/mnemonic.cpp)
+  src/mnemonic.cpp
+  src/cipher.cpp)
 
 add_subdirectory(third-party)
 
