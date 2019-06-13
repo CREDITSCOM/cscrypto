@@ -36,6 +36,7 @@ bool findWordInDictionary(const char* word, size_t& index) {
 }
 
 std::pair<QString, std::vector<uint8_t>> keysToDecrypt;
+const size_t kMinPswdSize = 3;
 } // namespace
 
 namespace cscrypto {
@@ -453,6 +454,12 @@ void KeyGenWidget::disableKeyGen() {
 }
 
 void KeyGenWidget::DumpKeysEncrypted() {
+    std::string pswd = encryptionPswdLineEdit_->text().toStdString();
+    if (pswd.size() < kMinPswdSize) {
+        toStatusBar(statusBar_, tr("Password is too short! Try another one."));
+        return;
+    }
+
     QFile f;
     if (!openFile(f, this, true)) {
         toStatusBar(statusBar_, tr("File to dump keys was not opened!"));
@@ -463,7 +470,6 @@ void KeyGenWidget::DumpKeysEncrypted() {
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
                                                keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\n";
-    std::string pswd = encryptionPswdLineEdit_->text().toStdString();
     if (pswd.empty()) {
         auto sk = keyPair.second.access();
         s += QString::fromUtf8(EncodeBase58(sk.data(), sk.data() + sk.size()).c_str());
