@@ -7,6 +7,9 @@
 #include <QSpacerItem>
 #include <QVBoxLayout>
 
+#include <common.hpp>
+#include <cscrypto/cscrypto.hpp>
+#include <passwordlineedit.hpp>
 #include <utils.hpp>
 
 namespace cscrypto {
@@ -30,15 +33,18 @@ void CipherWidget::tuneLayouts() {
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* modeLayout = new QHBoxLayout;
     QVBoxLayout* middleLayout = new QVBoxLayout;
+    QVBoxLayout* pswdLayout = new QVBoxLayout;
     QHBoxLayout* lowLayout = new QHBoxLayout;
 
     fillModeLayout(modeLayout);
     fillMiddleLayout(middleLayout);
+    fillPswdLayout(pswdLayout);
     fillLowLayout(lowLayout);
 
     mainLayout->addLayout(modeLayout);
     mainLayout->addLayout(middleLayout);
     mainLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    mainLayout->addLayout(pswdLayout);
     mainLayout->addLayout(lowLayout);
     setLayout(mainLayout);
 }
@@ -80,6 +86,40 @@ void CipherWidget::fillLowLayout(QLayout* l) {
     l->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     connect(this, &CipherWidget::canStart, startBtn_, &QPushButton::setEnabled);
+    connect(startBtn_, &QPushButton::clicked, this, &CipherWidget::start);
+}
+
+void CipherWidget::fillPswdLayout(QLayout* l) {
+    QLabel* lbl = new QLabel(tr("Password:"), this);
+    l->addWidget(lbl);
+    pswdLineEdit_ = new PasswordLineEdit(this);
+    l->addWidget(pswdLineEdit_);
+}
+
+void CipherWidget::start() {
+    auto pswd = pswdLineEdit_->text().toStdString();
+    if (pswd.empty()) {
+        toStatusBar(statusBar_, tr("Password empty! Fill it to encrypt / decrypt."));
+        return;
+    }
+    if (pswd.size() < kMinPswdSize) {
+        toStatusBar(statusBar_, tr("Password is too short!"));
+        return;
+    }
+    auto cipherKey = cscrypto::cipher::getCipherKeyFromPassword(pswd.c_str(), pswd.size());
+    if (encryptionMode_ && cscrypto::cipher::encryptFile(targetFileLbl_->text().toStdString().c_str(),
+                                                         sourceFileLbl_->text().toStdString().c_str(),
+                                                         cipherKey)) {
+        toStatusBar(statusBar_, tr("Source file successfully encrypted."));
+    }
+    else if (decryptionMode_ && cscrypto::cipher::decryptFile(targetFileLbl_->text().toStdString().c_str(),
+                                                              sourceFileLbl_->text().toStdString().c_str(),
+                                                              cipherKey)) {
+        toStatusBar(statusBar_, tr("Source file successfully decrypted."));
+    }
+    else {
+        toStatusBar(statusBar_, tr("Unsuccessfull operation!"));
+    }
 }
 
 void CipherWidget::getSrcFileName() {

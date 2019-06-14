@@ -12,6 +12,8 @@ class QVBoxLayout;
 namespace cscrypto {
 namespace gui {
 
+class PasswordLineEdit;
+
 class CipherWidget : public QWidget {
     Q_OBJECT
 
@@ -28,6 +30,7 @@ private:
     void fillModeLayout(QLayout*);
     void fillMiddleLayout(QVBoxLayout*);
     void fillLowLayout(QLayout*);
+    void fillPswdLayout(QLayout*);
 
     void activateEncryptionMode();
     void activateDecryptionMode();
@@ -35,9 +38,12 @@ private:
     void getSrcFileName();
     void getTrgFileName();
 
+    void start();
+
     QStatusBar& statusBar_;
     QLabel* sourceFileLbl_;
     QLabel* targetFileLbl_;
+    PasswordLineEdit* pswdLineEdit_;
 
     bool sourceFileLoaded_;
     bool targetFileLoaded_;
