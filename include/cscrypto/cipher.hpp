@@ -14,6 +14,9 @@ using CipherKey = MemGuard<cscrypto::Byte, kCipherKeySize>;
 CipherKey generateCipherKey();
 CipherKey getCipherKeyFromPassword(const char* pswd, size_t pswdLen);
 
+bool encryptFile(const char* target, const char* source, CipherKey& key);
+bool decryptFile(const char* target, const char* source, CipherKey& key);
+
 } // namespace cipher
 } // namespace cscrypto
 #endif // CSCRYPTO_CIPHER_HPP
