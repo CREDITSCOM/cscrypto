@@ -85,9 +85,9 @@ void KeyGenWidget::tuneLayouts() {
                             QSizePolicy::Policy::Expanding));
 
     mainRightLayout->addLayout(keyListLayout);
+    mainRightLayout->addLayout(mainLowLayout);
 
     mainLayout->addLayout(mainHLayout);
-    mainLayout->addLayout(mainLowLayout);
     setLayout(mainLayout);
 }
 
@@ -113,6 +113,10 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
     QPushButton* b3 = new QPushButton(tr("Show seed"), this);
     b3->setEnabled(false);
 
+    QPushButton* b4 = new QPushButton(tr("Show private"), this);
+    b4->setEnabled(false);
+
+    l->addWidget(b4);
     l->addWidget(b3);
     l->addWidget(b2);
     l->addWidget(b1);
@@ -126,6 +130,16 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
 
     connect(keysList_, &QListWidget::itemClicked, b1, &QPushButton::setEnabled);
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::dumpKeysToFile);
+
+    connect(keysList_, &QListWidget::itemClicked, b4, &QPushButton::setEnabled);
+    connect(b4, &QPushButton::clicked, this, &KeyGenWidget::showPrivate);
+}
+
+void KeyGenWidget::showPrivate() {
+    auto keys = keys_[size_t(keysList_->currentRow())];
+    auto pk = keys.second.access();
+    QString privateKey = QString::fromUtf8(EncodeBase58(pk.data(), pk.data() + pk.size()).c_str());
+    QMessageBox::information(this, tr("Private key unencrypted"), privateKey);
 }
 
 void KeyGenWidget::setupEncDialog(QDialog* d) {

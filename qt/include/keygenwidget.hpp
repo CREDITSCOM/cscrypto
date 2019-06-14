@@ -41,6 +41,7 @@ private:
     void setSeedOnMsBox();
     void disableKeyGen();
     void setupEncDialog(QDialog*);
+    void showPrivate();
 
     void fillMasterSeedFromString(const QString&);
     void handleInputSeed();
