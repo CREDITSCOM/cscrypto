@@ -32,6 +32,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC SODIUM_STATIC)
 
 if(WIN32)
   target_compile_options(${PROJECT_NAME} PUBLIC /wd4324)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
   
 target_include_directories(${PROJECT_NAME} PUBLIC
