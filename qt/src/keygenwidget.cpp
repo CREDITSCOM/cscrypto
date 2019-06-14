@@ -37,7 +37,6 @@ bool findWordInDictionary(const char* word, size_t& index) {
 }
 
 std::pair<QString, std::vector<uint8_t>> keysToDecrypt;
-const size_t kMinPswdSize = 3;
 } // namespace
 
 namespace cscrypto {
