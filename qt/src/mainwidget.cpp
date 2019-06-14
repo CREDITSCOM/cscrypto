@@ -44,8 +44,7 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("keygen", ptr));
     widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, keys_, ptr, tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
-//	  @TODO add when ciphering implemented in cscrypto
-//    widgets_.insert(std::make_pair("cipher", new CipherWidget(tabs_)));
+    widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
 }
 
 } // namespace gui

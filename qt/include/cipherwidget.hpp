@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+class QLayout;
+class QStatusBar;
+
 namespace cscrypto {
 namespace gui {
 
@@ -10,7 +13,20 @@ class CipherWidget : public QWidget {
     Q_OBJECT
 
 public:
-    CipherWidget(QWidget* parent = nullptr);
+    CipherWidget(QStatusBar& sb, QWidget* parent = nullptr);
+
+signals:
+    void encryptionModeActivated(bool);
+    void decryptionModeActivated(bool);
+
+private:
+    void tuneLayouts();
+    void fillModeLayout(QLayout*);
+
+    void activateEncryptionMode();
+    void activateDecryptionMode();
+
+    QStatusBar& statusBar_;
 };
 
 } // namespace gui
