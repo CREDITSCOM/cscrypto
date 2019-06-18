@@ -270,7 +270,6 @@ void KeyGenWidget::loadSeedFromFile() {
 
 void KeyGenWidget::fillKeyLayout(QLayout* l) {
     QLabel* label = new QLabel(tr("Keys generation:"), this);
-    label->setEnabled(false);
     l->addWidget(label);
 
     QPushButton* b1 = new QPushButton(tr("another seed"), this);
@@ -290,7 +289,6 @@ void KeyGenWidget::fillKeyLayout(QLayout* l) {
     l->addWidget(b4);
     connect(b4, &QPushButton::clicked, this, &KeyGenWidget::loadKeysFromFile);
 
-    connect(this, SIGNAL(enableKeyGen(bool)), label, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b1, SLOT(setEnabled(bool)));
     connect(this, SIGNAL(enableKeyGen(bool)), b2, SLOT(setEnabled(bool)));
 
