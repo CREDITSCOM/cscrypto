@@ -25,8 +25,15 @@ int KeyListModel::rowCount(const QModelIndex& /* parent */) const {
     return int(keys_.size());
 }
 
-void KeyListModel::addKeyPair(KeyPair&& keys) {
+void KeyListModel::addKeyPair(const KeyPair& keys) {
     keys_.push_back(keys);
+}
+
+KeyPair KeyListModel::getKeyPair(const QModelIndex& index) {
+    if (!index.isValid() || index.row() < 0 || size_t(index.row()) >= keys_.size()) {
+        return KeyPair();
+    }
+    return keys_[size_t(index.row())];
 }
 
 } // namespace gui

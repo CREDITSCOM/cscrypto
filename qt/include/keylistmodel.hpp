@@ -17,7 +17,8 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex& parent) const override;
 
-    void addKeyPair(KeyPair&& keys);
+    void addKeyPair(const KeyPair& keys);
+    KeyPair getKeyPair(const QModelIndex& index);
 
 private:
     std::vector<KeyPair> keys_;
