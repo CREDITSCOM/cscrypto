@@ -27,6 +27,7 @@ int KeyListModel::rowCount(const QModelIndex& /* parent */) const {
 
 void KeyListModel::addKeyPair(const KeyPair& keys) {
     keys_.push_back(keys);
+    emit dataChanged(index(int(keys_.size()) - 1), index(int(keys_.size()) - 1));
 }
 
 KeyPair KeyListModel::getKeyPair(const QModelIndex& index) {
