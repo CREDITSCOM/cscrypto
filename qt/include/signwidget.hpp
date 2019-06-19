@@ -10,24 +10,24 @@
 class QStatusBar;
 class QLayout;
 class QString;
-class QListWidget;
 class QLineEdit;
 class QTextEdit;
 class QPushButton;
 class QLabel;
+class QListView;
 
 namespace cscrypto {
 namespace gui {
 
 class KeyGenWidget;
+class KeyListModel;
 
 class SignWidget : public QWidget {
     Q_OBJECT
 
 public:
     SignWidget(QStatusBar& statusBar,
-               std::vector<KeyPair>& keys,
-               const KeyGenWidget* keyGenerator,
+               KeyListModel* keysModel,
                QWidget* parent = nullptr);
 
 signals:
@@ -35,6 +35,7 @@ signals:
     void enableVerification(bool);
     void canSign(bool);
     void canVerify(bool);
+    void canSetSigningKey(bool);
 
 private:
     void tuneLayouts();
@@ -54,11 +55,9 @@ private:
     void activateSignMode();
     void activateVerificationMode();
     void activateFileMode(int);
-
-    QListWidget* keysList_;
+    void signingKeyChosen();
 
     QStatusBar& statusBar_;
-    std::vector<KeyPair>& keys_;
     QLineEdit* operatingKeyLine_;
     QTextEdit* signingMsg_;
     QLineEdit* signatureLine_;
@@ -66,6 +65,8 @@ private:
     std::string fileHash_;
     QLabel* fileName_;
     bool fileMode_;
+    KeyListModel* keysModel_;
+    QListView* keysListView_;
 };
 } // namespace gui
 } // namespace cscrypto

@@ -29,7 +29,6 @@ public:
 signals:
     void enableKeyGen(bool);
     void enableNewSeed(bool);
-    void newKeyAdded();
     void enableKeysOperations(bool);
 
 private:

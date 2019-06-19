@@ -42,7 +42,7 @@ void MainWidget::fillTabs() {
 void MainWidget::fillWidgets() {
     auto ptr = new KeyGenWidget(*statusBar_, &keysModel, tabs_);
     widgets_.insert(std::make_pair("keygen", ptr));
-//    widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, keys_, ptr, tabs_)));
+    widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, &keysModel, tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
 }

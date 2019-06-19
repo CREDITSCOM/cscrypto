@@ -10,13 +10,14 @@
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QDialog>
-#include <QListWidget>
 #include <QLineEdit>
 #include <QCheckBox>
 #include <QFileDialog>
+#include <QListView>
 
 #include <utils.hpp>
 #include <keygenwidget.hpp>
+#include <keylistmodel.hpp>
 
 #include <base58.h>
 
@@ -28,25 +29,16 @@ namespace cscrypto {
 namespace gui {
 
 SignWidget::SignWidget(QStatusBar& statusBar,
-                       std::vector<KeyPair>& keys,
-                       const KeyGenWidget* keyGenerator,
+                       KeyListModel* keysModel,
                        QWidget* parent)
         : QWidget(parent),
-          keysList_(new QListWidget(this)),
           statusBar_(statusBar),
-          keys_(keys),
-          fileMode_(false) {
-    keysList_->hide();
-    connect(keyGenerator, &KeyGenWidget::newKeyAdded, this, &SignWidget::addNewKey);
+          fileMode_(false),
+          keysModel_(keysModel),
+          keysListView_(new QListView(this)){
+    keysListView_->setModel(keysModel_);
+    keysListView_->hide();
     tuneLayouts();
-}
-
-void SignWidget::addNewKey() {
-    if (!keys_.empty()) {
-        auto keyPair = keys_.back();
-        keysList_->addItem(EncodeBase58(keyPair.first.data(),
-                                        keyPair.first.data() + keyPair.first.size()).c_str());
-    }
 }
 
 void SignWidget::tuneLayouts() {
@@ -85,7 +77,7 @@ void SignWidget::fillModeLayout(QLayout* l) {
 void SignWidget::activateSignMode() {
     operatingKeyLine_->clear();
     signatureLine_->clear();
-    if (keys_.empty()) {
+    if (keysListView_->model()->rowCount() == 0) {
         toStatusBar(statusBar_, tr("Sign mode activated. No private keys! Generate first!"));
     }
     else {
@@ -144,7 +136,7 @@ void SignWidget::insertVerificationKey() {
 }
 
 void SignWidget::chooseSigningKey() {
-    if (keys_.empty()) {
+    if (keysListView_->model()->rowCount() == 0) {
         QMessageBox::critical(this, tr("Error!"), tr("No private keys detected! Generate firts!"));
         return;
     }
@@ -155,15 +147,16 @@ void SignWidget::chooseSigningKey() {
 
     QLabel* lbl = new QLabel(tr("Available signing keys:"), choosingKeyDialog);
     mainLayout->addWidget(lbl);
-    mainLayout->addWidget(keysList_);
-    keysList_->show();
+    mainLayout->addWidget(keysListView_);
+    keysListView_->show();
 
     lowLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Policy::Expanding,
                                        QSizePolicy::Policy::Minimum));
     QPushButton* ok = new QPushButton(tr("Ok"), choosingKeyDialog);
     ok->setEnabled(false);
 
-    connect(keysList_, &QListWidget::itemClicked, ok, &QPushButton::setEnabled);
+    connect(keysListView_, &QListView::clicked, this, &SignWidget::signingKeyChosen);
+    connect(this, &SignWidget::canSetSigningKey, ok, &QPushButton::setEnabled);
     connect(ok, &QPushButton::clicked, this, &SignWidget::setSigningKey);
     connect(ok, &QPushButton::clicked, choosingKeyDialog, &QDialog::close);
 
@@ -173,8 +166,12 @@ void SignWidget::chooseSigningKey() {
     choosingKeyDialog->show();
 }
 
+void SignWidget::signingKeyChosen() {
+    emit canSetSigningKey(true);
+}
+
 void SignWidget::setSigningKey() {
-    operatingKeyLine_->setText(keysList_->currentItem()->text());
+    operatingKeyLine_->setText(keysListView_->model()->data(keysListView_->currentIndex()).toString());
     toStatusBar(statusBar_, tr("New operating key has been selected."));
     emit canSign(true);
 }
@@ -252,7 +249,7 @@ void SignWidget::signMsg() {
         toStatusBar(statusBar_, tr("Signing message is empty! Type it."));
         return;
     }
-    auto signature = cscrypto::generateSignature(keys_[size_t(keysList_->currentRow())].second,
+    auto signature = cscrypto::generateSignature(keysModel_->getKeyPair(keysListView_->currentIndex()).second,
                                                  reinterpret_cast<cscrypto::Byte*>(msg.data()), msg.size());
     signatureLine_->setText(QString::fromUtf8(EncodeBase58(signature.data(), signature.data() + signature.size()).c_str()));
     toStatusBar(statusBar_, tr("Message signed. New signature has been generated."));
