@@ -1,16 +1,16 @@
 #ifndef HASH_WIDGET_HPP
 #define HASH_WIDGET_HPP
 
+#include <cinttypes>
+#include <vector>
+
 #include <QWidget>
 
-#include <vector>
-#include <cinttypes>
-
-class QStatusBar;
-class QLayout;
-class QTextEdit;
-class QLineEdit;
 class QLabel;
+class QLayout;
+class QLineEdit;
+class QStatusBar;
+class QTextEdit;
 
 namespace cscrypto {
 namespace gui {

@@ -1,10 +1,10 @@
 #ifndef CSCRYPTO_GUI_UTILS_HPP
 #define CSCRYPTO_GUI_UTILS_HPP
 
-#include <QStatusBar>
-#include <QString>
 #include <QFile>
 #include <QFileDialog>
+#include <QStatusBar>
+#include <QString>
 
 namespace cscrypto {
 namespace gui {

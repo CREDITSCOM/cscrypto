@@ -2,8 +2,8 @@
 #define CSCRYPTO_GUI_COMMON_HPP
 
 #include <cstddef>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include <cscrypto/cscrypto.hpp>
 

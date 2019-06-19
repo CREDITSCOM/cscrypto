@@ -1,24 +1,23 @@
 #include "hashwidget.hpp"
 
-#include <QVBoxLayout>
-#include <QStatusBar>
-#include <QRadioButton>
-#include <QSpacerItem>
-#include <QCheckBox>
-#include <QTextEdit>
-#include <QPushButton>
-#include <QLabel>
-#include <QLineEdit>
-#include <QFileDialog>
-#include <QString>
-
-#include <utils.hpp>
-
 #include <fstream>
 #include <sstream>
 
-#include <cscrypto/cscrypto.hpp>
+#include <QCheckBox>
+#include <QFileDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSpacerItem>
+#include <QStatusBar>
+#include <QString>
+#include <QTextEdit>
+#include <QVBoxLayout>
+
 #include <base58.h>
+#include <cscrypto/cscrypto.hpp>
+#include <utils.hpp>
 
 namespace cscrypto {
 namespace gui {

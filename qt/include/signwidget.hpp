@@ -1,20 +1,20 @@
 #ifndef SIGN_WIDGET_HPP
 #define SIGN_WIDGET_HPP
 
-#include <QWidget>
-
 #include <string>
+
+#include <QWidget>
 
 #include <common.hpp>
 
-class QStatusBar;
-class QLayout;
-class QString;
-class QLineEdit;
-class QTextEdit;
-class QPushButton;
 class QLabel;
+class QLayout;
+class QLineEdit;
 class QListView;
+class QPushButton;
+class QStatusBar;
+class QString;
+class QTextEdit;
 
 namespace cscrypto {
 namespace gui {

@@ -1,14 +1,14 @@
 #include "mainwidget.hpp"
 
-#include <QVBoxLayout>
-#include <QTabWidget>
 #include <QSizePolicy>
 #include <QStatusBar>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
-#include "keygenwidget.hpp"
-#include "hashwidget.hpp"
-#include "signwidget.hpp"
 #include "cipherwidget.hpp"
+#include "hashwidget.hpp"
+#include "keygenwidget.hpp"
+#include "signwidget.hpp"
 
 namespace cscrypto {
 namespace gui {

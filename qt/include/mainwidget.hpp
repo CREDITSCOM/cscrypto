@@ -1,15 +1,15 @@
 #ifndef MAINWIDGET_HPP
 #define MAINWIDGET_HPP
 
-#include <QWidget>
-
 #include <map>
+
+#include <QWidget>
 
 #include <common.hpp>
 #include <keylistmodel.hpp>
 
-class QTabWidget;
 class QStatusBar;
+class QTabWidget;
 
 namespace cscrypto {
 namespace gui {

@@ -1,9 +1,9 @@
-#include <QApplication>
-#include "mainwidget.hpp"
-
 #include <iostream>
 
+#include <QApplication>
+
 #include <cscrypto/cscrypto.hpp>
+#include "mainwidget.hpp"
 
 int main(int argc, char* argv[]) {
     if (!cscrypto::cryptoInit()) {

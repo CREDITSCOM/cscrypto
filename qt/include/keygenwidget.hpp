@@ -1,24 +1,24 @@
 #ifndef KEYGEN_WIDGET_HPP
 #define KEYGEN_WIDGET_HPP
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
 #include <common.hpp>
 
-class QLayout;
 class QDialog;
-class QMessageBox;
-class QLineEdit;
-class QStatusBar;
 class QFile;
+class QLayout;
+class QLineEdit;
 class QListView;
+class QMessageBox;
+class QStatusBar;
 
 namespace cscrypto {
 namespace gui {
 
-class PasswordLineEdit;
 class KeyListModel;
+class PasswordLineEdit;
 
 class KeyGenWidget : public QWidget {
     Q_OBJECT

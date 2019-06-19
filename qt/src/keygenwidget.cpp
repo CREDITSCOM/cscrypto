@@ -1,28 +1,27 @@
 #include "keygenwidget.hpp"
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QDialog>
-#include <QFileDialog>
-#include <QFile>
-#include <QTextStream>
-#include <QLineEdit>
-#include <QSpacerItem>
-#include <QStatusBar>
-#include <QMessageBox>
-#include <QListView>
-
-#include <sstream>
-#include <string>
 #include <cstring>
 #include <iostream>
+#include <sstream>
+#include <string>
+
+#include <QDialog>
+#include <QFile>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListView>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QStatusBar>
+#include <QTextStream>
+#include <QVBoxLayout>
 
 #include <base58.h>
-#include <utils.hpp>
-#include <passwordlineedit.hpp>
 #include <keylistmodel.hpp>
+#include <passwordlineedit.hpp>
+#include <utils.hpp>
 
 namespace {
 bool findWordInDictionary(const char* word, size_t& index) {

@@ -1,29 +1,28 @@
 #include "signwidget.hpp"
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QStatusBar>
-#include <QSpacerItem>
-#include <QRadioButton>
-#include <QPushButton>
-#include <QLabel>
-#include <QTextEdit>
-#include <QMessageBox>
-#include <QDialog>
-#include <QLineEdit>
-#include <QCheckBox>
-#include <QFileDialog>
-#include <QListView>
-
-#include <utils.hpp>
-#include <keygenwidget.hpp>
-#include <keylistmodel.hpp>
-
-#include <base58.h>
-
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+
+#include <QCheckBox>
+#include <QDialog>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListView>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSpacerItem>
+#include <QStatusBar>
+#include <QTextEdit>
+#include <QVBoxLayout>
+
+#include <base58.h>
+#include <keygenwidget.hpp>
+#include <keylistmodel.hpp>
+#include <utils.hpp>
 
 namespace cscrypto {
 namespace gui {
