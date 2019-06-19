@@ -10,9 +10,9 @@
 #include <QTextStream>
 #include <QLineEdit>
 #include <QSpacerItem>
-#include <QListWidget>
 #include <QStatusBar>
 #include <QMessageBox>
+#include <QListView>
 
 #include <sstream>
 #include <string>
@@ -22,6 +22,7 @@
 #include <base58.h>
 #include <utils.hpp>
 #include <passwordlineedit.hpp>
+#include <keylistmodel.hpp>
 
 namespace {
 bool findWordInDictionary(const char* word, size_t& index) {
@@ -43,7 +44,7 @@ namespace cscrypto {
 namespace gui {
 
 KeyGenWidget::KeyGenWidget(QStatusBar& statusBar,
-                           std::vector<KeyPair>& keys,
+                           KeyListModel* keysModel,
                            QWidget* parent)
         : QWidget(parent),
           typeSeedDialog_(new QDialog(this)),
@@ -51,7 +52,10 @@ KeyGenWidget::KeyGenWidget(QStatusBar& statusBar,
           encryptionPswdLineEdit_(new PasswordLineEdit(this)),
           statusBar_(statusBar),
           nextKeyId_(0),
-          keys_(keys) {
+          keysModel_(keysModel),
+          keysListView_(new QListView(this)) {
+    keysListView_->setModel(keysModel_);
+    connect(keysListView_, &QListView::clicked, this, &KeyGenWidget::activateKeysOps);
     encryptionPswdLineEdit_->hide();
     seedMsBox_->setWindowTitle(tr("Seed phrase"));
     setupTypeSeedDia();
@@ -95,8 +99,7 @@ void KeyGenWidget::fillKeyListLayout(QLayout* l) {
     lbl->setText(tr("Available keys:"));
     l->addWidget(lbl);
 
-    keysList_ = new QListWidget(this);
-    l->addWidget(keysList_);
+    l->addWidget(keysListView_);
 }
 
 void KeyGenWidget::fillMainLowLayout(QLayout* l) {
@@ -127,15 +130,23 @@ void KeyGenWidget::fillMainLowLayout(QLayout* l) {
     connect(b2, &QPushButton::clicked, this, &KeyGenWidget::saveSeedToFile);
     connect(this, &KeyGenWidget::enableKeyGen, b2, &QPushButton::setEnabled);
 
-    connect(keysList_, &QListWidget::itemClicked, b1, &QPushButton::setEnabled);
     connect(b1, &QPushButton::clicked, this, &KeyGenWidget::dumpKeysToFile);
+    connect(this, &KeyGenWidget::enableKeysOperations, b1, &QPushButton::setEnabled);
 
-    connect(keysList_, &QListWidget::itemClicked, b4, &QPushButton::setEnabled);
     connect(b4, &QPushButton::clicked, this, &KeyGenWidget::showPrivate);
+    connect(this, &KeyGenWidget::enableKeysOperations, b4, &QPushButton::setEnabled);
+}
+
+void KeyGenWidget::activateKeysOps() {
+    emit enableKeysOperations(true);
 }
 
 void KeyGenWidget::showPrivate() {
-    auto keys = keys_[size_t(keysList_->currentRow())];
+    auto keys = keysModel_->getKeyPair(keysListView_->currentIndex());
+    if (!keys.second) {
+        toStatusBar(statusBar_, tr("Error! No private key!"));
+        return;
+    }
     auto pk = keys.second.access();
     QString privateKey = QString::fromUtf8(EncodeBase58(pk.data(), pk.data() + pk.size()).c_str());
     QMessageBox::information(this, tr("Private key unencrypted"), privateKey);
@@ -318,9 +329,7 @@ void KeyGenWidget::loadKeysFromFile() {
             toStatusBar(statusBar_, tr("Invalid keys!"));
             return;
         }
-        keys_.push_back(keys);
-        keysList_->addItem(publicKey);
-        emit newKeyAdded();
+        keysModel_->addKeyPair(keys);
         toStatusBar(statusBar_, tr("Loaded keys are correct. Added to your key list."));
         return;
     }
@@ -362,9 +371,7 @@ void KeyGenWidget::decryptKeys() {
         toStatusBar(statusBar_, tr("Incorrect key pair!"));
         return;
     }
-    keys_.push_back(keys);
-    emit newKeyAdded();
-    keysList_->addItem(keysToDecrypt.first);
+    keysModel_->addKeyPair(keys);
     toStatusBar(statusBar_, tr("Keys loaded successfully."));
 }
 
@@ -406,24 +413,14 @@ void KeyGenWidget::handlePrivKeyLine() {
     KeyPair keys;
     keys.second = cscrypto::PrivateKey::readFromBytes(vecPriv);
     keys.first = cscrypto::getMatchingPublic(keys.second);
-    keys_.push_back(keys);
-    emit newKeyAdded();
+    keysModel_->addKeyPair(keys);
 
-    QString s = QString::fromUtf8(EncodeBase58(keys.first.data(),
-                                               keys.first.data() + keys.first.size()).c_str());
-    keysList_->addItem(s);
     toStatusBar(statusBar_, tr("Public key was generated and added to available keys!"));
 }
 
 void KeyGenWidget::genKeyPair() {
     KeyPair newPair = cscrypto::keys_derivation::deriveKeyPair(masterSeed_, nextKeyId_++);
-    keys_.push_back(newPair);
-    emit newKeyAdded();
-
-    QString s = QString::fromUtf8(EncodeBase58(newPair.first.data(),
-                                               newPair.first.data() + newPair.first.size()).c_str());
-    keysList_->addItem(s);
-    toStatusBar(statusBar_, tr("New key pair has been generated."));
+    keysModel_->addKeyPair(newPair);
 }
 
 inline QString KeyGenWidget::getSeedString() {
@@ -478,7 +475,7 @@ void KeyGenWidget::DumpKeysEncrypted() {
         return;
     }
 
-    auto keyPair = keys_[size_t(keysList_->currentRow())];
+    auto keyPair = keysModel_->getKeyPair(keysListView_->currentIndex());
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
                                                keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\n";
@@ -504,7 +501,7 @@ void KeyGenWidget::DumpKeysClear() {
         return;
     }
 
-    auto keyPair = keys_[size_t(keysList_->currentRow())];
+    auto keyPair = keysModel_->getKeyPair(keysListView_->currentIndex());
     QString s = QString::fromUtf8(EncodeBase58(keyPair.first.data(),
                                                keyPair.first.data() + keyPair.first.size()).c_str());
     s += "\n";

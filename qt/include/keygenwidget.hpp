@@ -10,25 +10,27 @@ class QLayout;
 class QDialog;
 class QMessageBox;
 class QLineEdit;
-class QListWidget;
 class QStatusBar;
 class QFile;
+class QListView;
 
 namespace cscrypto {
 namespace gui {
 
 class PasswordLineEdit;
+class KeyListModel;
 
 class KeyGenWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyGenWidget(QStatusBar& statusBar, std::vector<KeyPair>& keys, QWidget* parent = nullptr);
+    KeyGenWidget(QStatusBar& statusBar, KeyListModel* keysModel, QWidget* parent = nullptr);
 
 signals:
     void enableKeyGen(bool);
     void enableNewSeed(bool);
     void newKeyAdded();
+    void enableKeysOperations(bool);
 
 private:
     void tuneLayouts();
@@ -42,6 +44,7 @@ private:
     void disableKeyGen();
     void setupEncDialog(QDialog*);
     void showPrivate();
+    void activateKeysOps();
 
     void fillMasterSeedFromString(const QString&);
     void handleInputSeed();
@@ -65,12 +68,12 @@ private:
     QLineEdit* seedLineEdit_;
     QLineEdit* privateKeyLineEdit_;
     PasswordLineEdit* encryptionPswdLineEdit_;
-    QListWidget* keysList_;
     QStatusBar& statusBar_;
 
     cscrypto::keys_derivation::MasterSeed masterSeed_;
     cscrypto::keys_derivation::KeyId nextKeyId_;
-    std::vector<KeyPair>& keys_;
+    KeyListModel* keysModel_;
+    QListView* keysListView_;
 };
 } // namespace gui
 } // namespace cscrypto

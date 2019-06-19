@@ -6,6 +6,7 @@
 #include <map>
 
 #include <common.hpp>
+#include <keylistmodel.hpp>
 
 class QTabWidget;
 class QStatusBar;
@@ -26,7 +27,7 @@ private:
     QTabWidget* tabs_;
     QStatusBar* statusBar_;
     std::map<const char*, QWidget*> widgets_;
-    std::vector<KeyPair> keys_;
+    KeyListModel keysModel;
 };
 
 } // namespace gui
