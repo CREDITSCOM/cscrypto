@@ -1,5 +1,6 @@
 #include <cscrypto/cipher.hpp>
 
+#include <algorithm>
 #include <array>
 #include <cstdio>
 
@@ -115,6 +116,38 @@ bool decryptFile(const char* target, const char* source, CipherKey& key) {
     } while (!eof);
 
     clear(key, fs, ft);
+    return true;
+}
+
+Bytes encryptData(const Bytes& source, CipherKey& key) {
+    Bytes res;
+    uint8_t nonce[crypto_secretbox_NONCEBYTES];
+    randombytes_buf(nonce, sizeof nonce);
+
+    res.resize(source.size() + crypto_secretbox_MACBYTES + sizeof nonce);
+    std::copy(nonce, nonce + sizeof nonce, res.begin());    
+    sodium_mprotect_readonly(key.data());
+    crypto_secretbox_easy(res.data() + sizeof nonce, source.data(),
+                          source.size(), nonce, key.data());
+    sodium_mprotect_noaccess(key.data());
+    return res;
+}
+
+bool decryptData(Bytes& target, const Bytes& source, CipherKey& key) {
+    if (source.size() < crypto_secretbox_MACBYTES + crypto_secretbox_NONCEBYTES) {
+        return false;
+    }
+    uint8_t nonce[crypto_secretbox_NONCEBYTES];
+    std::copy(source.data(), source.data() + sizeof nonce, nonce);
+    target.resize(source.size() - crypto_secretbox_MACBYTES - crypto_secretbox_NONCEBYTES);
+    sodium_mprotect_readonly(key.data());
+    if (crypto_secretbox_open_easy(target.data(), source.data() + sizeof nonce,
+                                   source.size() - sizeof nonce, nonce,
+                                   key.data()) != 0) {
+        sodium_mprotect_noaccess(key.data());
+        return false;
+    }
+    sodium_mprotect_noaccess(key.data());
     return true;
 }
 } // namespace cipher

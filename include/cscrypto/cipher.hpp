@@ -17,6 +17,9 @@ CipherKey getCipherKeyFromPassword(const char* pswd, size_t pswdLen);
 bool encryptFile(const char* target, const char* source, CipherKey& key);
 bool decryptFile(const char* target, const char* source, CipherKey& key);
 
+Bytes encryptData(const Bytes& source, CipherKey& key);
+bool decryptData(Bytes& target, const Bytes& source, CipherKey& key);
+
 } // namespace cipher
 } // namespace cscrypto
 #endif // CSCRYPTO_CIPHER_HPP
