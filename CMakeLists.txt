@@ -27,6 +27,10 @@ add_library(${PROJECT_NAME} STATIC
 
 add_subdirectory(third-party)
 
+if(build_cscrypto_tests)
+  add_subdirectory(tests)
+endif()
+
 target_link_libraries(${PROJECT_NAME} blake2 libsodium)
 target_compile_definitions(${PROJECT_NAME} PUBLIC SODIUM_STATIC)
 
