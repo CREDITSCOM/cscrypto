@@ -75,3 +75,7 @@ set_property(TARGET libsodium PROPERTY IMPORTED_LOCATION_RELWALLET
 
 add_subdirectory(blake2)
 add_subdirectory(base58)
+
+if(build_cscrypto_tests)
+  add_subdirectory(googletest)
+endif()
