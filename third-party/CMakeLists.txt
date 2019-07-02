@@ -77,5 +77,8 @@ add_subdirectory(blake2)
 add_subdirectory(base58)
 
 if(build_cscrypto_tests)
+  if(MSVC)
+    set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  endif()
   add_subdirectory(googletest)
 endif()
