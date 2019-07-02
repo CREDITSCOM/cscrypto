@@ -20,3 +20,17 @@ TEST_F(MainFuncsTest, Hash) {
     ASSERT_EQ(h, calculateHash(testData_.data(), testData_.size()));
     ASSERT_NE(h, calculateHash(testData_.data(), testData_.size() - 1));
 }
+
+TEST_F(MainFuncsTest, HMAC) {
+    Bytes key(10);
+    fillBufWithRandomBytes(key.data(), key.size());
+    auto h = calculateHash(testData_.data(), testData_.size(),
+                           key.data(), key.size());
+    ASSERT_EQ(h, calculateHash(testData_.data(), testData_.size(),
+                               key.data(), key.size()));
+    ASSERT_NE(h, calculateHash(testData_.data(), testData_.size()));
+    ASSERT_NE(h, calculateHash(testData_.data(), testData_.size() - 1,
+                               key.data(), key.size()));
+    ASSERT_NE(h, calculateHash(testData_.data(), testData_.size(),
+                               key.data(), key.size() - 1));
+}
