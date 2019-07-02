@@ -34,3 +34,17 @@ TEST_F(MainFuncsTest, HMAC) {
     ASSERT_NE(h, calculateHash(testData_.data(), testData_.size(),
                                key.data(), key.size() - 1));
 }
+
+TEST_F(MainFuncsTest, KeyPairGeneration) {
+    PublicKey pub;
+    PrivateKey priv = generateKeyPair(pub);
+    ASSERT_TRUE(validateKeyPair(pub, priv));
+}
+
+TEST_F(MainFuncsTest, GetMatchingPublic) {
+    PublicKey pub;
+    PrivateKey priv = generateKeyPair(pub);
+    auto clonePub = getMatchingPublic(priv);
+    ASSERT_EQ(pub, clonePub);
+}
+
