@@ -4,6 +4,7 @@ project(cscrypto_tests)
 
 add_executable(${PROJECT_NAME}
   ciphertests.cpp
+  keysderivationtests.cpp
   mainfuncstests.cpp
   main.cpp)
 
