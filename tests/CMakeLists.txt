@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME}
   ciphertests.cpp
   keysderivationtests.cpp
   mainfuncstests.cpp
+  mnemonictests.cpp
   main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC cscrypto gtest)
