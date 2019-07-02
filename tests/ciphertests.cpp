@@ -3,6 +3,7 @@
 #include <cscrypto/cscrypto.hpp>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 
 using namespace cscrypto::cipher;
@@ -48,7 +49,9 @@ TEST_F(CipherTest, FileEncryption) {
     decryptFile("decrypted.txt", "encrypted.txt", key);
     std::ifstream f("decrypted.txt");
     ASSERT_TRUE(f.is_open());
+    std::stringstream ss;
+    ss << f.rdbuf();
     std::string s1;
-    f >> s1;
+    s1 = ss.str();
     ASSERT_EQ(s, s1);
 }
