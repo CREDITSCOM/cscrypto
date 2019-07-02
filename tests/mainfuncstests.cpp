@@ -48,3 +48,22 @@ TEST_F(MainFuncsTest, GetMatchingPublic) {
     ASSERT_EQ(pub, clonePub);
 }
 
+TEST_F(MainFuncsTest, Signature) {
+    PublicKey pub, pub1;
+    PrivateKey priv = generateKeyPair(pub);
+    auto priv1 = generateKeyPair(pub1);
+    auto signature = generateSignature(priv, testData_.data(), testData_.size());
+    ASSERT_TRUE(verifySignature(signature, pub, testData_.data(), testData_.size()));
+    ASSERT_TRUE(verifySignature(signature.data(), pub.data(), testData_.data(),
+                                testData_.size()));
+    ASSERT_FALSE(verifySignature(signature, pub1, testData_.data(), testData_.size()));
+    ASSERT_FALSE(verifySignature(signature, pub, testData_.data(), testData_.size() - 1));
+}
+
+TEST_F(MainFuncsTest, FillWithZeros) {
+    Bytes bytes(100);
+    fillWithZeros(bytes.data(), bytes.size());
+    for (auto byte : bytes) {
+        ASSERT_EQ(byte, 0);
+    }
+}
