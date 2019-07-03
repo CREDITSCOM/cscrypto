@@ -22,6 +22,11 @@ Cscrypto is credits company's crypto library supporting:
 ### Basic requirements :
  - cmake 3.10 or newer
  - compiler with C++17 support
+ 
+To build with tests add the following argument when run cmake:
+```sh
+ -Dbuild_cscrypto_tests=ON
+```
 
 ### Windows:
 ```sh
