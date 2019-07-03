@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <cstring>
-
 #include <cscrypto/cscrypto.hpp>
+
+#include <cstring>
 
 TEST(MnemonicTest, MasterSeedToWords) {
     cscrypto::cryptoInit();

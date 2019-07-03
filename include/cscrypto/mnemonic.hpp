@@ -1,10 +1,10 @@
 #ifndef CSCRYPTO_MNEMONIC_HPP
 #define CSCRYPTO_MNEMONIC_HPP
 
+#include <functional>
+
 #include <cscrypto/dictionary.hpp>
 #include <cscrypto/keysderivation.hpp>
-
-#include <functional>
 
 namespace cscrypto {
 namespace mnemonic {

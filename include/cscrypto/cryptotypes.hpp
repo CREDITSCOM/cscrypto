@@ -1,12 +1,13 @@
 #ifndef CSCRYPTO_CRYPTOTYPES_HPP
 #define CSCRYPTO_CRYPTOTYPES_HPP
 
-#include "cscrypto/cryptoconstants.hpp"
 
 #include <array>
 #include <cinttypes>
 #include <string_view>
 #include <vector>
+
+#include "cscrypto/cryptoconstants.hpp"
 
 namespace cscrypto {
 

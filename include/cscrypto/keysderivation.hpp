@@ -1,11 +1,11 @@
 #ifndef CSCRYPTO_KEYS_DERIVATION_HPP
 #define CSCRYPTO_KEYS_DERIVATION_HPP
 
-#include <cscrypto/privatekey.hpp>
-
 #include <array>
 #include <cinttypes>
 #include <utility>
+
+#include <cscrypto/privatekey.hpp>
 
 namespace cscrypto {
 namespace keys_derivation {

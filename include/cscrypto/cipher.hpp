@@ -1,8 +1,8 @@
 #ifndef CSCRYPTO_CIPHER_HPP
 #define CSCRYPTO_CIPHER_HPP
 
-#include <cscrypto/memoryprotection.hpp>
 #include <cscrypto/cryptotypes.hpp>
+#include <cscrypto/memoryprotection.hpp>
 
 namespace cscrypto {
 namespace cipher {

@@ -1,7 +1,7 @@
-#include <memory.h>
-#include <cstring>
-
 #include "cscrypto/privatekey.hpp"
+
+#include <cstring>
+#include <memory.h>
 
 namespace cscrypto {
 

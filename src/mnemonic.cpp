@@ -1,8 +1,8 @@
-#include <cscrypto/mnemonic.hpp>
-#include <cscrypto/maincryptofunctions.hpp>
-
 #include <algorithm>
 #include <cstring>
+
+#include <cscrypto/maincryptofunctions.hpp>
+#include <cscrypto/mnemonic.hpp>
 
 using namespace cscrypto::keys_derivation;
 
