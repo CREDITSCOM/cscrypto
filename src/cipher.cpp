@@ -5,6 +5,7 @@
 #include <cstdio>
 
 #include <cscrypto/maincryptofunctions.hpp>
+#include <cscrypto/privatekey.hpp>
 
 namespace cscrypto {
 namespace cipher {
@@ -148,6 +149,20 @@ bool decryptData(Bytes& target, const Bytes& source, CipherKey& key) {
         return false;
     }
     sodium_mprotect_noaccess(key.data());
+    return true;
+}
+
+bool getPubCipherKey(PubCipherKey& key, const PrivateKey& privKey) {
+    MemGuard<cscrypto::Byte, crypto_sign_SEEDBYTES> seed;
+    auto pkReadable = privKey.access();
+    if (crypto_sign_ed25519_sk_to_seed(seed.data(), pkReadable.data()) != 0) {
+        return false;
+    }
+    MemGuard<cscrypto::Byte, crypto_box_SECRETKEYBYTES> sk;
+    crypto_box_SEEDBYTES;
+    if (crypto_box_seed_keypair(key.data(), sk.data(), seed.data()) != 0) {
+        return false;
+    }
     return true;
 }
 } // namespace cipher
