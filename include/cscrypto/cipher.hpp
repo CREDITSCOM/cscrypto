@@ -27,7 +27,9 @@ bool encryptFile(const char* target, const char* source, CipherKey& key);
 bool decryptFile(const char* target, const char* source, CipherKey& key);
 
 Bytes encryptData(const Bytes& source, CipherKey& key);
+Bytes encryptData(const Bytes& source, const PubCipherKey& key);
 bool decryptData(Bytes& target, const Bytes& source, CipherKey& key);
+bool decryptData(Bytes& target, const Bytes& source, const PrivateKey&);
 
 } // namespace cipher
 } // namespace cscrypto

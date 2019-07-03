@@ -13,13 +13,40 @@ namespace cipher {
 namespace {
 const size_t kChunkSize = 4096;
 
+using Seed = MemGuard<cscrypto::Byte, crypto_sign_SEEDBYTES>;
+using DecryptionSecKey = MemGuard<cscrypto::Byte, crypto_box_SECRETKEYBYTES>;
+
 inline void clear(CipherKey& key, FILE* fs, FILE* ft) {
     sodium_mprotect_noaccess(key.data());
     fclose(fs);
     fclose(ft);
 }
-} // namespace
 
+bool extractSeed(Seed& seed, const PrivateKey& privKey) {
+    auto pkReadable = privKey.access();
+    if (crypto_sign_ed25519_sk_to_seed(seed.data(), pkReadable.data()) != 0) {
+        return false;
+    }
+    return true;
+}
+
+bool getEncryptionKeysFromPrivate(PubCipherKey& pk,
+                                  const PrivateKey& privKey,
+                                  DecryptionSecKey* sk = nullptr) {
+    Seed seed;
+    DecryptionSecKey secKey;
+    if (!extractSeed(seed, privKey)) {
+        return false;
+    }
+    if (crypto_box_seed_keypair(pk.data(), secKey.data(), seed.data()) != 0) {
+        return false;
+    }
+    if (sk != nullptr) {
+        *sk = std::move(secKey);
+    }
+    return true;
+}
+} // namespace
 
 CipherKey generateCipherKey() {
     CipherKey res;
@@ -153,14 +180,29 @@ bool decryptData(Bytes& target, const Bytes& source, CipherKey& key) {
 }
 
 bool getPubCipherKey(PubCipherKey& key, const PrivateKey& privKey) {
-    MemGuard<cscrypto::Byte, crypto_sign_SEEDBYTES> seed;
-    auto pkReadable = privKey.access();
-    if (crypto_sign_ed25519_sk_to_seed(seed.data(), pkReadable.data()) != 0) {
+    return getEncryptionKeysFromPrivate(key, privKey);
+}
+
+Bytes encryptData(const Bytes& source, const PubCipherKey& key) {
+    Bytes res(source.size() + crypto_box_SEALBYTES);
+    crypto_box_seal(res.data(), source.data(), source.size(), key.data());
+    return res;
+}
+
+bool decryptData(Bytes& target, const Bytes& source, const PrivateKey& privKey) {
+    if (source.size() < crypto_box_SEALBYTES) {
         return false;
     }
-    MemGuard<cscrypto::Byte, crypto_box_SECRETKEYBYTES> sk;
-    crypto_box_SEEDBYTES;
-    if (crypto_box_seed_keypair(key.data(), sk.data(), seed.data()) != 0) {
+    target.resize(source.size() - crypto_box_SEALBYTES);
+
+    DecryptionSecKey sk;
+    PubCipherKey pk;
+    if (!getEncryptionKeysFromPrivate(pk, privKey, &sk)) {
+        return false;
+    }
+
+    if (crypto_box_seal_open(target.data(), source.data(), source.size(),
+                             pk.data(), sk.data()) != 0) {
         return false;
     }
     return true;
