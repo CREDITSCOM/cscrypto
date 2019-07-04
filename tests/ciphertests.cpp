@@ -55,3 +55,14 @@ TEST_F(CipherTest, FileEncryption) {
     s1 = ss.str();
     ASSERT_EQ(s, s1);
 }
+
+TEST_F(CipherTest, EncryptDataWithPubKey) {
+    cscrypto::PublicKey pk;
+    auto sk = cscrypto::generateKeyPair(pk);
+    PubCipherKey pkCipher;
+    ASSERT_TRUE(getPubCipherKey(pkCipher, sk));
+    auto encBytes = encryptData(testData_, pkCipher);
+    cscrypto::Bytes decrypted;
+    ASSERT_TRUE(decryptData(decrypted, encBytes, sk));
+    ASSERT_EQ(testData_, decrypted);
+}
