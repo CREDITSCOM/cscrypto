@@ -3,7 +3,7 @@
 namespace cscrypto {
 namespace keys_derivation {
 
-MasterSeed generateMaterSeed() {
+MasterSeed generateMasterSeed() {
     MasterSeed res;
     crypto_kdf_keygen(res.data());
     sodium_mprotect_noaccess(res.data());

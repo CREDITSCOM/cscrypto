@@ -18,7 +18,7 @@ using MasterSeed = MemGuard<cscrypto::Byte, kMasterSeedSize>;
 using Context = std::array<const char, kSeedContextSize>;
 using KeyPair = std::pair<PublicKey, PrivateKey>;
 
-MasterSeed generateMaterSeed();
+MasterSeed generateMasterSeed();
 
 KeyPair deriveKeyPair(MasterSeed&, KeyId, const Context& ctx = {0});
 

@@ -445,7 +445,7 @@ void KeyGenWidget::saveSeedToFile() {
 }
 
 void KeyGenWidget::genNewSeed() {
-    masterSeed_ = cscrypto::keys_derivation::generateMaterSeed();
+    masterSeed_ = cscrypto::keys_derivation::generateMasterSeed();
     emit enableNewSeed(false);
     emit enableKeyGen(true);
     toStatusBar(statusBar_, tr("New seed has been generated! Save it to restore your keys in future."));

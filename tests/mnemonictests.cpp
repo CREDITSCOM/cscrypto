@@ -6,7 +6,7 @@
 
 TEST(MnemonicTest, MasterSeedToWords) {
     cscrypto::cryptoInit();
-    auto ms = cscrypto::keys_derivation::generateMaterSeed();
+    auto ms = cscrypto::keys_derivation::generateMasterSeed();
     auto words = cscrypto::mnemonic::masterSeedToWords(ms);
     auto ms1 = cscrypto::mnemonic::wordsToMasterSeed(words);
     auto words1 = cscrypto::mnemonic::masterSeedToWords(ms1);

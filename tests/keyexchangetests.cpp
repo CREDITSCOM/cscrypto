@@ -6,7 +6,7 @@ using namespace cscrypto::keyexchange;
 using namespace cscrypto::cipher;
 
 TEST(KeyExchangeTest, GetSessionKeys) {
-    auto ms = cscrypto::keys_derivation::generateMaterSeed();
+    auto ms = cscrypto::keys_derivation::generateMasterSeed();
     auto clientSignKeys = cscrypto::keys_derivation::deriveKeyPair(ms, 0);
     auto serverSignKeys = cscrypto::keys_derivation::deriveKeyPair(ms, 1);
 

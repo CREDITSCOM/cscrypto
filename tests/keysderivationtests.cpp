@@ -12,7 +12,7 @@ protected:
 };
 
 TEST_F(KeysDerivationTest, DeriveKeyPair) {
-    auto seed = generateMaterSeed();
+    auto seed = generateMasterSeed();
     auto keys = deriveKeyPair(seed, 0);
     auto keys1 = deriveKeyPair(seed, 1);
     ASSERT_TRUE(cscrypto::validateKeyPair(keys.first, keys.second));
@@ -22,7 +22,7 @@ TEST_F(KeysDerivationTest, DeriveKeyPair) {
 }
 
 TEST_F(KeysDerivationTest, DeriveKeyPairContext) {
-    auto seed = generateMaterSeed();
+    auto seed = generateMasterSeed();
     Context context = { 'h', 'e', 'l', 'l', 'o' };
     auto keys = deriveKeyPair(seed, 0, context);
     auto keys1 = deriveKeyPair(seed, 0);
