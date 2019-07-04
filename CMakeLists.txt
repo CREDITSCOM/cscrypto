@@ -14,12 +14,14 @@ add_library(${PROJECT_NAME} STATIC
   include/cscrypto/privatekey.hpp
   include/cscrypto/cryptoconstants.hpp
   include/cscrypto/maincryptofunctions.hpp
+  include/cscrypto/keyexchange.hpp
   include/cscrypto/keysderivation.hpp
   include/cscrypto/dictionary.hpp
   include/cscrypto/mnemonic.hpp
   include/cscrypto/cipher.hpp
   src/maincryptofunctions.cpp
   src/privatekey.cpp
+  src/keyexchange.cpp
   src/keysderivation.cpp
   src/dictionary_en.cpp
   src/mnemonic.cpp
