@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} STATIC
   include/cscrypto/cscrypto.hpp
   include/cscrypto/cryptotypes.hpp
+  include/cscrypto/helpers.hpp
   include/cscrypto/memoryprotection.hpp
   include/cscrypto/privatekey.hpp
   include/cscrypto/cryptoconstants.hpp
@@ -19,6 +20,7 @@ add_library(${PROJECT_NAME} STATIC
   include/cscrypto/dictionary.hpp
   include/cscrypto/mnemonic.hpp
   include/cscrypto/cipher.hpp
+  src/helpers.cpp
   src/maincryptofunctions.cpp
   src/privatekey.cpp
   src/keyexchange.cpp
