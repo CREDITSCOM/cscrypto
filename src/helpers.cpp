@@ -3,7 +3,7 @@
 namespace cscrypto {
 namespace helpers {
 
-bool cryptoMemcpm(const void* const b1, const void* const b2, size_t len) {
+bool cryptoMemcmp(const void* const b1, const void* const b2, size_t len) {
     if (sodium_memcmp(b1, b2, len) == 0) {
         return true;
     }

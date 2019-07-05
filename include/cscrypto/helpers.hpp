@@ -16,7 +16,7 @@ namespace helpers {
 /// To mitigate side-channel attacks use this fuction when
 /// comparison involves secret data.
 ///
-bool cryptoMemcpm(const void* const b1, const void* const b2, size_t len);
+bool cryptoMemcmp(const void* const b1, const void* const b2, size_t len);
 
 std::string bin2Hex(const uint8_t* const bin, size_t len);
 bool hex2Bin(uint8_t* bin, size_t binMaxLen, const std::string& hex,
