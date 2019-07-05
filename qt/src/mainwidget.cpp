@@ -10,6 +10,7 @@
 #include "keyexchangewidget.hpp"
 #include "keygenwidget.hpp"
 #include "signwidget.hpp"
+#include "storagewidget.hpp"
 
 namespace cscrypto {
 namespace gui {
@@ -46,6 +47,7 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, tabs_)));
+    widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
 }
 
 } // namespace gui

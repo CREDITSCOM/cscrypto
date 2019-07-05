@@ -14,7 +14,8 @@ set(HEADERS
   include/cipherwidget.hpp
   include/passwordlineedit.hpp
   include/keyexchangewidget.hpp
-  include/keylistmodel.hpp)
+  include/keylistmodel.hpp
+  include/storagewidget.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
 qt5_add_resources(
@@ -31,6 +32,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/passwordlineedit.cpp
   src/keyexchangewidget.cpp
   src/keylistmodel.cpp
+  src/storagewidget.cpp
   include/common.hpp
   include/utils.hpp
   ${HEADERS}
@@ -39,4 +41,4 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets cscrypto base58)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Sql cscrypto base58)

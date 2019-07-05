@@ -48,6 +48,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/third-party/libsodium/src/libsodium/include)
 
 find_package(Qt5Widgets)
+find_package(Qt5Sql)
 set(WITH_GUI ${Qt5Widgets_FOUND})
 if(WITH_GUI)
   add_subdirectory(qt)
