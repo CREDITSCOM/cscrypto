@@ -24,6 +24,8 @@ private:
     void fillTabs();
     void fillWidgets();
 
+    bool openDatabase();
+
     QTabWidget* tabs_;
     QStatusBar* statusBar_;
     std::map<const char*, QWidget*> widgets_;

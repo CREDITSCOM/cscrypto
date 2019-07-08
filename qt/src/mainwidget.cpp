@@ -3,6 +3,8 @@
 #include <QSizePolicy>
 #include <QStatusBar>
 #include <QTabWidget>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
 #include <QVBoxLayout>
 
 #include "cipherwidget.hpp"
@@ -11,6 +13,11 @@
 #include "keygenwidget.hpp"
 #include "signwidget.hpp"
 #include "storagewidget.hpp"
+#include "utils.hpp"
+
+namespace {
+const char* kDatabaseName = "csrypto_db.sqlite";
+} // namespace
 
 namespace cscrypto {
 namespace gui {
@@ -47,7 +54,19 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, tabs_)));
-    widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
+    if (openDatabase()) {
+        widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
+        toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
+    }
+    else {
+        toStatusBar(*statusBar_, QSqlDatabase::database().lastError().text());
+    }
+}
+
+bool MainWidget::openDatabase() {
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(kDatabaseName);
+    return db.open();
 }
 
 } // namespace gui

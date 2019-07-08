@@ -15,6 +15,7 @@ public:
     StorageWidget(QStatusBar& sb, QWidget* parent = nullptr);
 
 private:
+
     QStatusBar& statusBar_;
 };
 
