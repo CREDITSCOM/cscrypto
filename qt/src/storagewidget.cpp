@@ -24,7 +24,7 @@ StorageWidget::StorageWidget(QStatusBar& sb, QWidget* parent)
           statusBar_(sb),
           importedKeyLineEdit_(new QLineEdit(this)),
           holderNameLineEdit_(new QLineEdit(this)),
-          trustedKeyCheckBox_(new QCheckBox(this)),
+          trustedKeyCheckBox_(new QCheckBox(tr("Trusted?"), this)),
           idToRemoveLineEdit_(new QLineEdit(this)) {
     importedKeyLineEdit_->hide();
     holderNameLineEdit_->hide();
