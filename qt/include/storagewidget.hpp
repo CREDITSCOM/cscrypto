@@ -26,6 +26,7 @@ private:
 
     void importNewKey();
     void addKeyToDatabase();
+    void removeKeyFromDatabase();
     void removeKey();
     QDialog* setUpImportKeyDialog();
 
@@ -35,6 +36,8 @@ private:
     QLineEdit* importedKeyLineEdit_;
     QLineEdit* holderNameLineEdit_;
     QCheckBox* trustedKeyCheckBox_;
+    QLineEdit* idToRemoveLineEdit_;
+    int recordId_;
 };
 
 } // namespace gui
