@@ -4,6 +4,9 @@
 #include <QSqlTableModel>
 #include <QWidget>
 
+class QCheckBox;
+class QDialog;
+class QLineEdit;
 class QStatusBar;
 class QTableView;
 
@@ -21,9 +24,17 @@ private:
     void setUpView();
     void tuneLayouts();
 
+    void importNewKey();
+    void addKeyToDatabase();
+    void removeKey();
+    QDialog* setUpImportKeyDialog();
+
     QStatusBar& statusBar_;
     QSqlTableModel keysModel_;
     QTableView* keysTableView_;
+    QLineEdit* importedKeyLineEdit_;
+    QLineEdit* holderNameLineEdit_;
+    QCheckBox* trustedKeyCheckBox_;
 };
 
 } // namespace gui
