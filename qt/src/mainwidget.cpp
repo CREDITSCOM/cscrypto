@@ -55,11 +55,11 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, tabs_)));
     if (openDatabase()) {
-        widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
+        widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
     }
     else {
-        toStatusBar(*statusBar_, QSqlDatabase::database().lastError().text());
+        toStatusBar(*statusBar_, tr("Storage widget unavailable: ") + QSqlDatabase::database().lastError().text());
     }
 }
 
