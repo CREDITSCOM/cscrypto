@@ -1,6 +1,7 @@
 #ifndef CSCRYPTO_HPP
 #define CSCRYPTO_HPP
 
+#include <base58.h>
 #include <cscrypto/cipher.hpp>
 #include <cscrypto/helpers.hpp>
 #include <cscrypto/keyexchange.hpp>

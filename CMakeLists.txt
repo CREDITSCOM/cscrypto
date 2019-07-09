@@ -35,7 +35,7 @@ if(build_cscrypto_tests)
   add_subdirectory(tests)
 endif()
 
-target_link_libraries(${PROJECT_NAME} blake2 libsodium)
+target_link_libraries(${PROJECT_NAME} base58 blake2 libsodium)
 target_compile_definitions(${PROJECT_NAME} PUBLIC SODIUM_STATIC)
 
 if(WIN32)
