@@ -22,7 +22,7 @@ std::string bin2Hex(const uint8_t* const bin, size_t len);
 bool hex2Bin(uint8_t* bin, size_t binMaxLen, const std::string& hex,
              const std::string& ignore = "");
 
-enum Base64Variant : uint32_t {
+enum Base64Variant {
     original = sodium_base64_VARIANT_ORIGINAL,
     originalNoPadding = sodium_base64_VARIANT_ORIGINAL_NO_PADDING,
     urlSafe = sodium_base64_VARIANT_URLSAFE,

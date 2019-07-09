@@ -28,7 +28,7 @@ bool hex2Bin(uint8_t* bin, size_t binMaxLen, const std::string& hex,
 
 std::string bin2Base64(const uint8_t* bin, size_t len, Base64Variant var) {
     std::string res;
-    res.resize(sodium_base64_ENCODED_LEN(len, var));
+    res.resize(sodium_base64_encoded_len(len, var));
     sodium_bin2base64(res.data(), res.size(), bin, len, var);
     return res;
 }
