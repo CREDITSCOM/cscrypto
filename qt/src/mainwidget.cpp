@@ -3,7 +3,6 @@
 #include <QSizePolicy>
 #include <QStatusBar>
 #include <QTabWidget>
-#include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include <QVBoxLayout>
 
@@ -16,7 +15,7 @@
 #include "utils.hpp"
 
 namespace {
-const char* kDatabaseName = "csrypto_db.sqlite";
+const char* kDatabaseName = "cscrypto_db.sqlite";
 } // namespace
 
 namespace cscrypto {
@@ -25,7 +24,8 @@ namespace gui {
 MainWidget::MainWidget(QWidget* parent)
         : QWidget(parent),
           tabs_(new QTabWidget(this)),
-          statusBar_(new QStatusBar(this)) {
+          statusBar_(new QStatusBar(this)),
+          dbOpener_(kDatabaseName) {
     fillWidgets();
     fillTabs();
 
@@ -53,20 +53,14 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, &keysModel_, tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
-    if (openDatabase()) {
+    if (dbOpener_.isOpened()) {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
-        widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
+        widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, importedKeysModel_, tabs_)));
         widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, &keysModel_, tabs_)));
     }
     else {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" not opened. Storage widget unavailable: ") + QSqlDatabase::database().lastError().text());
     }
-}
-
-bool MainWidget::openDatabase() {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(kDatabaseName);
-    return db.open();
 }
 
 } // namespace gui

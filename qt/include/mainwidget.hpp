@@ -3,9 +3,11 @@
 
 #include <map>
 
+#include <QSqlTableModel>
 #include <QWidget>
 
 #include <common.hpp>
+#include <databaseopener.hpp>
 #include <keylistmodel.hpp>
 
 class QStatusBar;
@@ -24,12 +26,12 @@ private:
     void fillTabs();
     void fillWidgets();
 
-    bool openDatabase();
-
     QTabWidget* tabs_;
     QStatusBar* statusBar_;
     std::map<const char*, QWidget*> widgets_;
     KeyListModel keysModel_;
+    DatabaseOpener dbOpener_;
+    QSqlTableModel importedKeysModel_;
 };
 
 } // namespace gui

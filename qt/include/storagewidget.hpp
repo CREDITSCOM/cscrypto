@@ -1,13 +1,13 @@
 #ifndef STORAGE_WIDGET_HPP
 #define STORAGE_WIDGET_HPP
 
-#include <QSqlTableModel>
 #include <QWidget>
 
 class QCheckBox;
 class QDialog;
 class QLineEdit;
 class QStatusBar;
+class QSqlTableModel;
 class QTableView;
 
 namespace cscrypto {
@@ -17,7 +17,7 @@ class StorageWidget : public QWidget {
     Q_OBJECT
 
 public:
-    StorageWidget(QStatusBar& sb, QWidget* parent = nullptr);
+    StorageWidget(QStatusBar& sb, QSqlTableModel& keysModel, QWidget* parent = nullptr);
 
 private:
     void setUpModel();
@@ -31,7 +31,7 @@ private:
     QDialog* setUpImportKeyDialog();
 
     QStatusBar& statusBar_;
-    QSqlTableModel keysModel_;
+    QSqlTableModel& keysModel_;
     QTableView* keysTableView_;
     QLineEdit* importedKeyLineEdit_;
     QLineEdit* holderNameLineEdit_;

@@ -5,8 +5,8 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSqlTableModel>
 #include <QSqlQuery>
-#include <QTableView>
 #include <QTableView>
 #include <QSpacerItem>
 #include <QtSql>
@@ -19,9 +19,10 @@
 namespace cscrypto {
 namespace gui {
 
-StorageWidget::StorageWidget(QStatusBar& sb, QWidget* parent)
+StorageWidget::StorageWidget(QStatusBar& sb, QSqlTableModel& keysModel, QWidget* parent)
         : QWidget(parent),
           statusBar_(sb),
+          keysModel_(keysModel),
           importedKeyLineEdit_(new QLineEdit(this)),
           holderNameLineEdit_(new QLineEdit(this)),
           trustedKeyCheckBox_(new QCheckBox(tr("Trusted?"), this)),

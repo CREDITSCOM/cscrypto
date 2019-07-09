@@ -3,6 +3,9 @@
 
 #include <QWidget>
 
+class QHBoxLayout;
+class QLayout;
+class QListView;
 class QStatusBar;
 
 namespace cscrypto {
@@ -17,8 +20,14 @@ public:
     KeyExchangeWidget(QStatusBar& sb, KeyListModel* model, QWidget* parent = nullptr);
 
 private:
+    void tuneLayout();
+    void fillUpperLaytout(QHBoxLayout*);
+    void fillMiddleLayout(QLayout*);
+    void fillLowLayout(QLayout*);
+
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
+    QListView* ownKeysView_;
 };
 
 } // namespace gui

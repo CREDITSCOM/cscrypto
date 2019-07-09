@@ -23,6 +23,7 @@ qt5_add_resources(
   OPTIONS -no-compress)
 
 add_executable(${PROJECT_NAME} ${GUI_TYPE}
+  src/databaseopener.cpp
   src/main.cpp
   src/mainwidget.cpp
   src/keygenwidget.cpp
@@ -34,6 +35,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/keylistmodel.cpp
   src/storagewidget.cpp
   include/common.hpp
+  include/databaseopener.hpp
   include/utils.hpp
   ${HEADERS}
   ${MOC_FILES}
