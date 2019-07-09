@@ -29,7 +29,7 @@ private:
     QTabWidget* tabs_;
     QStatusBar* statusBar_;
     std::map<const char*, QWidget*> widgets_;
-    KeyListModel keysModel;
+    KeyListModel keysModel_;
 };
 
 } // namespace gui

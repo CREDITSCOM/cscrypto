@@ -49,17 +49,17 @@ void MainWidget::fillTabs() {
 }
 
 void MainWidget::fillWidgets() {
-    widgets_.insert(std::make_pair("keygen", new KeyGenWidget(*statusBar_, &keysModel, tabs_)));
-    widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, &keysModel, tabs_)));
+    widgets_.insert(std::make_pair("keygen", new KeyGenWidget(*statusBar_, &keysModel_, tabs_)));
+    widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, &keysModel_, tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
     widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
-    widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, tabs_)));
     if (openDatabase()) {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
         widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, tabs_)));
+        widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, &keysModel_, tabs_)));
     }
     else {
-        toStatusBar(*statusBar_, tr(kDatabaseName) + tr("not opened. Storage widget unavailable: ") + QSqlDatabase::database().lastError().text());
+        toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" not opened. Storage widget unavailable: ") + QSqlDatabase::database().lastError().text());
     }
 }
 

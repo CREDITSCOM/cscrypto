@@ -8,14 +8,17 @@ class QStatusBar;
 namespace cscrypto {
 namespace gui {
 
+class KeyListModel;
+
 class KeyExchangeWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyExchangeWidget(QStatusBar& sb, QWidget* parent = nullptr);
+    KeyExchangeWidget(QStatusBar& sb, KeyListModel* model, QWidget* parent = nullptr);
 
 private:
     QStatusBar& statusBar_;
+    KeyListModel* ownKeysModel_;
 };
 
 } // namespace gui
