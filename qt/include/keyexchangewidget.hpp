@@ -7,6 +7,8 @@ class QHBoxLayout;
 class QLayout;
 class QListView;
 class QStatusBar;
+class QSqlTableModel;
+class QTableView;
 
 namespace cscrypto {
 namespace gui {
@@ -17,7 +19,8 @@ class KeyExchangeWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyExchangeWidget(QStatusBar& sb, KeyListModel* model, QWidget* parent = nullptr);
+    KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
+                      QSqlTableModel& importedKeysModel, QWidget* parent = nullptr);
 
 private:
     void tuneLayout();
@@ -28,6 +31,8 @@ private:
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
     QListView* ownKeysView_;
+    QSqlTableModel& importedKeysModel_;
+    QTableView* importedKeysView_;
 };
 
 } // namespace gui

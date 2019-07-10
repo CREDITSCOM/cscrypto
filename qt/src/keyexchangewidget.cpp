@@ -3,6 +3,8 @@
 #include <QLabel>
 #include <QListView>
 #include <QHBoxLayout>
+#include <QSqlTableModel>
+#include <QTableView>
 #include <QVBoxLayout>
 
 #include <keylistmodel.hpp>
@@ -10,12 +12,16 @@
 namespace cscrypto {
 namespace gui {
 
-KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* model, QWidget* parent)
+KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
+                                     QSqlTableModel& importedKeysModel, QWidget* parent)
         : QWidget(parent),
           statusBar_(sb),
-          ownKeysModel_(model),
-          ownKeysView_(new QListView(this)) {
+          ownKeysModel_(ownKeysModel),
+          ownKeysView_(new QListView(this)),
+          importedKeysModel_(importedKeysModel),
+          importedKeysView_(new QTableView(this)) {
     ownKeysView_->setModel(ownKeysModel_);
+    importedKeysView_->setModel(&importedKeysModel_);
     tuneLayout();
 }
 
@@ -45,6 +51,7 @@ void KeyExchangeWidget::fillUpperLaytout(QHBoxLayout* l) {
 
     QLabel* impKeysLbl = new QLabel(tr("Imported keys:"), this);
     importedKeysLayout->addWidget(impKeysLbl);
+    importedKeysLayout->addWidget(importedKeysView_);
 
     l->addLayout(ownKeysLayout);
     l->addLayout(importedKeysLayout);
