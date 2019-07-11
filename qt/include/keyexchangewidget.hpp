@@ -1,6 +1,7 @@
 #ifndef KEY_EXCHANGE_WIDGET_HPP
 #define KEY_EXCHANGE_WIDGET_HPP
 
+#include <QString>
 #include <QWidget>
 
 class QHBoxLayout;
@@ -23,13 +24,16 @@ public:
     KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
                       QSqlTableModel& importedKeysModel, QWidget* parent = nullptr);
 
+signals:
+    void canSetUpSessionKey(bool);
+
 private:
     void tuneLayout();
     void fillUpperLaytout(QHBoxLayout*);
-    void fillMiddleLayout(QLayout*);
     void fillLowLayout(QLayout*);
 
     void setOwnKey();
+    void inspectKeyIdText(const QString&);
 
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
@@ -37,6 +41,11 @@ private:
     QSqlTableModel& importedKeysModel_;
     QTableView* importedKeysView_;
     QLabel* ownKeySelectedLbl_;
+
+    QString importedKey_;
+
+    bool ownKeyOk_;
+    bool importedKeyOk_;
 };
 
 } // namespace gui
