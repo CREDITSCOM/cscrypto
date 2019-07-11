@@ -56,22 +56,16 @@ void KeyExchangeWidget::fillUpperLaytout(QHBoxLayout* l) {
     ownKeysLayout->addWidget(ownKeysView_);
     ownKeysLayout->addWidget(ownKeySelectedLbl_);
 
-    QLabel* idLbl = new QLabel(tr("Type imported key's id:"), this);
-    QLineEdit* idLineEdit = new QLineEdit(this);
-    QHBoxLayout* idLayout = new QHBoxLayout;
-    idLayout->addWidget(idLbl);
-    idLayout->addWidget(idLineEdit);
-
     QLabel* impKeysLbl = new QLabel(tr("Imported keys:"), this);
+    importedKeySelectedLbl_ = new QLabel(tr("Imported key: not selected"));
     importedKeysLayout->addWidget(impKeysLbl);
     importedKeysLayout->addWidget(importedKeysView_);
-    importedKeysLayout->addLayout(idLayout);
+    importedKeysLayout->addWidget(importedKeySelectedLbl_);
 
     l->addLayout(ownKeysLayout);
     l->addLayout(importedKeysLayout);
 
     connect(ownKeysView_, &QListView::clicked, this, &KeyExchangeWidget::setOwnKey);
-    connect(idLineEdit, &QLineEdit::textEdited, this, &KeyExchangeWidget::inspectKeyIdText);
 }
 
 void KeyExchangeWidget::inspectKeyIdText(const QString& idStr) {
@@ -80,8 +74,9 @@ void KeyExchangeWidget::inspectKeyIdText(const QString& idStr) {
     QSqlRecord record = query.record();
     if (ok && query.next()) {
         importedKey_ = query.value(record.indexOf("ImportedKey")).toString();
-        toStatusBar(statusBar_, tr("Selected imported key is: ") + importedKey_);
+        toStatusBar(statusBar_, tr("New imported key for exchange has been selected."));
         importedKeyOk_ = true;
+        importedKeySelectedLbl_->setText(tr("Imported key: ") + importedKey_);
         if (ownKeyOk_) {
             emit canSetUpSessionKey(true);
         }
@@ -89,6 +84,7 @@ void KeyExchangeWidget::inspectKeyIdText(const QString& idStr) {
     else {
         toStatusBar(statusBar_, tr("Incorrect imported key id!"));
         importedKeyOk_ = false;
+        importedKeySelectedLbl_->setText(tr("Imported key: not selected"));
         emit canSetUpSessionKey(false);
     }
 }
@@ -109,6 +105,12 @@ void KeyExchangeWidget::fillLowLayout(QLayout* l) {
     l->addWidget(b);
     l->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
     connect(this, &KeyExchangeWidget::canSetUpSessionKey, b, &QPushButton::setEnabled);
+
+    QLabel* idLbl = new QLabel(tr("Type imported key's id:"), this);
+    QLineEdit* idLineEdit = new QLineEdit(this);
+    l->addWidget(idLbl);
+    l->addWidget(idLineEdit);
+    connect(idLineEdit, &QLineEdit::textEdited, this, &KeyExchangeWidget::inspectKeyIdText);
 }
 
 } // namespace gui

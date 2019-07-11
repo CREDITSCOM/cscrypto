@@ -41,6 +41,7 @@ private:
     QSqlTableModel& importedKeysModel_;
     QTableView* importedKeysView_;
     QLabel* ownKeySelectedLbl_;
+    QLabel* importedKeySelectedLbl_;
 
     QString importedKey_;
 
