@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QHBoxLayout;
+class QLabel;
 class QLayout;
 class QListView;
 class QStatusBar;
@@ -28,11 +29,14 @@ private:
     void fillMiddleLayout(QLayout*);
     void fillLowLayout(QLayout*);
 
+    void setOwnKey();
+
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
     QListView* ownKeysView_;
     QSqlTableModel& importedKeysModel_;
     QTableView* importedKeysView_;
+    QLabel* ownKeySelectedLbl_;
 };
 
 } // namespace gui

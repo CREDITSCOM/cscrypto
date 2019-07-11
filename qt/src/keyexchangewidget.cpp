@@ -1,6 +1,7 @@
 #include <keyexchangewidget.hpp>
 
 #include <QLabel>
+#include <QLineEdit>
 #include <QListView>
 #include <QHBoxLayout>
 #include <QSqlTableModel>
@@ -8,6 +9,7 @@
 #include <QVBoxLayout>
 
 #include <keylistmodel.hpp>
+#include <utils.hpp>
 
 namespace cscrypto {
 namespace gui {
@@ -46,15 +48,32 @@ void KeyExchangeWidget::fillUpperLaytout(QHBoxLayout* l) {
     QVBoxLayout* importedKeysLayout = new QVBoxLayout;
 
     QLabel* ownKeysLbl = new QLabel(tr("Own keys:"), this);
+    ownKeySelectedLbl_ = new QLabel(tr("Own key: not selected"));
     ownKeysLayout->addWidget(ownKeysLbl);
     ownKeysLayout->addWidget(ownKeysView_);
+    ownKeysLayout->addWidget(ownKeySelectedLbl_);
+
+    QLabel* idLbl = new QLabel(tr("Type imported key's id:"), this);
+    QLineEdit* idLineEdit = new QLineEdit(this);
+    QHBoxLayout* idLayout = new QHBoxLayout;
+    idLayout->addWidget(idLbl);
+    idLayout->addWidget(idLineEdit);
 
     QLabel* impKeysLbl = new QLabel(tr("Imported keys:"), this);
     importedKeysLayout->addWidget(impKeysLbl);
     importedKeysLayout->addWidget(importedKeysView_);
+    importedKeysLayout->addLayout(idLayout);
 
     l->addLayout(ownKeysLayout);
     l->addLayout(importedKeysLayout);
+
+    connect(ownKeysView_, &QListView::clicked, this, &KeyExchangeWidget::setOwnKey);
+}
+
+void KeyExchangeWidget::setOwnKey() {
+    QString pubKey = ownKeysModel_->data(ownKeysView_->currentIndex()).toString();
+    ownKeySelectedLbl_->setText(tr("Own key: ") + pubKey);
+    toStatusBar(statusBar_, tr("New own key for key exchange has been selected."));
 }
 
 void KeyExchangeWidget::fillMiddleLayout(QLayout*) {
