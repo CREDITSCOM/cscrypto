@@ -16,6 +16,7 @@ set(HEADERS
   include/passwordlineedit.hpp
   include/keyexchangewidget.hpp
   include/keylistmodel.hpp
+  include/server.hpp
   include/storagewidget.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
@@ -35,6 +36,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/passwordlineedit.cpp
   src/keyexchangewidget.cpp
   src/keylistmodel.cpp
+  src/server.cpp
   src/storagewidget.cpp
   include/common.hpp
   include/databaseopener.hpp
@@ -45,4 +47,4 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
   
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Sql cscrypto base58)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Sql Qt5::Network cscrypto base58)

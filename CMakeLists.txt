@@ -49,8 +49,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 find_package(Qt5Widgets)
 find_package(Qt5Sql)
-set(WITH_GUI ${Qt5Widgets_FOUND})
-if(WITH_GUI)
+find_package(Qt5Network)
+
+if (${Qt5Widgets_FOUND} AND ${Qt5Sql_FOUND} AND ${Qt5Network_FOUND})
   add_subdirectory(qt)
 else()
   message(WARNING "The GUI part will not be built")
