@@ -9,6 +9,7 @@ endif(WIN32)
 set(HEADERS
   include/mainwidget.hpp
   include/keygenwidget.hpp
+  include/incomingconnectionhandler.hpp
   include/net.hpp
   include/signwidget.hpp
   include/hashwidget.hpp
@@ -29,6 +30,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/main.cpp
   src/mainwidget.cpp
   src/keygenwidget.cpp
+  src/incomingconnectionhandler.cpp
   src/net.cpp
   src/hashwidget.cpp
   src/signwidget.cpp

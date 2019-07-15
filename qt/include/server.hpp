@@ -1,33 +1,19 @@
 #ifndef CSCRYPTO_QT_SERVER_HPP
 #define CSCRYPTO_QT_SERVER_HPP
 
-#include <cinttypes>
-
-#include <QObject>
-#include <QString>
-
-class QTcpServer;
+#include <QtNetwork/QTcpServer>
 
 namespace cscrypto {
 namespace gui {
 
-class Server : public QObject {
+class Server : public QTcpServer {
     Q_OBJECT
 
 public:
-    Server(uint16_t port);
+    Server(QObject* parent = nullptr);
 
-    QString getLastError();
-
-public slots:
-    void newConnection();
-    void readClient();
-
-private:
-    QTcpServer* tcpServer_;
-    uint16_t nextBlockSize_;
-
-    QString errorString_;
+protected:
+    void incomingConnection(qintptr socketDecriptor) override;
 };
 
 } // namespace gui

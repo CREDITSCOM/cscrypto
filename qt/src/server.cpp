@@ -1,35 +1,19 @@
 #include <server.hpp>
 
+#include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
-#include <QtNetwork/QtNetwork>
+
+#include <incomingconnectionhandler.hpp>
 
 namespace cscrypto {
 namespace gui {
 
-Server::Server(uint16_t port) {
-    tcpServer_ = new QTcpServer(this);
+Server::Server(QObject* parent) : QTcpServer(parent) {}
 
-    if (!tcpServer_->listen(QHostAddress::Any, port)) {
-        tcpServer_->close();
-        errorString_ = tr("Server error. Unable to start the server: ")
-                     + tcpServer_->errorString();
-        return;
-    }
-
-    connect(tcpServer_, &QTcpServer::newConnection, this, &Server::newConnection);
+void Server::incomingConnection(qintptr socketDecriptor) {
+    IncomingConnectionHandler* thread = new IncomingConnectionHandler(socketDecriptor, this);
+    connect(thread, &IncomingConnectionHandler::finished, thread, &IncomingConnectionHandler::deleteLater);
+    thread->start();
 }
-
-QString Server::getLastError() {
-    return errorString_;
-}
-
-void Server::newConnection() {
-
-}
-
-void Server::readClient() {
-
-}
-
 } // namespace gui
 } // namespace cscrypto
