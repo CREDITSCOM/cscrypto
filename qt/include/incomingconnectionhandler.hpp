@@ -30,8 +30,8 @@ public:
             Unknown
         };
 
-        int requestSize(RequestType);
-        bool validateRequest(const cscrypto::Bytes&);
+        static int requestSize(RequestType);
+        bool validateRequest(RequestType, const cscrypto::Bytes&);
         cscrypto::Bytes formReply();
 
     private:
@@ -40,6 +40,7 @@ public:
         cscrypto::PublicKey senderPubKey_;
         cscrypto::PublicKey requestedPubKey_;
         cscrypto::keyexchange::PubExchangeKey exchangePubKey_;
+        cscrypto::cipher::CipherKey commonSecretKey_;
         cscrypto::Signature signature_;
     };
 

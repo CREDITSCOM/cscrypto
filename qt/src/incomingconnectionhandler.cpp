@@ -7,6 +7,10 @@
 namespace cscrypto {
 namespace gui {
 
+namespace {
+const int kSocketTimeout = 5 * 1000;
+} // namespace
+
 IncomingConnectionHandler::IncomingConnectionHandler(qintptr socketDescriptor, QObject* parent)
         : QThread(parent), socketDescriptor_(socketDescriptor) {}
 
@@ -26,19 +30,48 @@ void IncomingConnectionHandler::run() {
 }
 
 bool IncomingConnectionHandler::readRequest(QTcpSocket& socket) {
-    const int timeout = 5 * 1000;
+    RequestMaster::RequestType reqType;
 
-    do {
-        if (!socket.waitForReadyRead(timeout)) {
+    while (socket.bytesAvailable() < qint64(sizeof(reqType))) {
+        if (!socket.waitForReadyRead(kSocketTimeout)) {
             emit error(socket.errorString());
             return false;
         }
-    } while (true);
+    }
+    socket.read(reinterpret_cast<char*>(&reqType), sizeof(reqType));
 
-    return true;//requestMaster_.validateRequest(base58Request);
+    int numBytesToReceive = RequestMaster::requestSize(reqType);
+    while (socket.bytesAvailable() < numBytesToReceive) {
+        if (!socket.waitForReadyRead(kSocketTimeout)) {
+            emit error(socket.errorString());
+            return false;
+        }
+    }
+    if (numBytesToReceive != socket.bytesAvailable()) {
+        emit error(tr("Incoming connection handler: invalid request!"));
+        return false;
+    }
+
+    cscrypto::Bytes request;
+    request.resize(size_t(numBytesToReceive));
+    socket.read(reinterpret_cast<char*>(request.data()), numBytesToReceive);
+
+    return requestMaster_.validateRequest(reqType, request);
 }
 
 void IncomingConnectionHandler::sendReply(QTcpSocket&) {}
+
+int IncomingConnectionHandler::RequestMaster::requestSize(RequestType type) {
+    if (type != KeyExchangeQuery && type != KeyExchangeReply) {
+        return -1;
+    }
+    int res = cscrypto::kPublicKeySize * 2 + cscrypto::keyexchange::kPubExchangeKeySize + cscrypto::kSignatureSize;
+    return res;
+}
+
+bool IncomingConnectionHandler::RequestMaster::validateRequest(RequestType, const cscrypto::Bytes &) {
+    return true;
+}
 
 } // namespace gui
 } // namespace cscrypto
