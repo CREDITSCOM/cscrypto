@@ -35,10 +35,12 @@ public:
         cscrypto::Bytes formReply();
 
     private:
+        bool verifySenderPublicKey();
+        bool checkRequestSignature(const cscrypto::Bytes&);
+
         RequestType containingType_ = Unknown;
 
         cscrypto::PublicKey senderPubKey_;
-        cscrypto::PublicKey requestedPubKey_;
         cscrypto::keyexchange::PubExchangeKey exchangePubKey_;
         cscrypto::cipher::CipherKey commonSecretKey_;
         cscrypto::Signature signature_;
