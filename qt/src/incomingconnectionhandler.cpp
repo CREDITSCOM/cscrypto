@@ -20,9 +20,6 @@ void IncomingConnectionHandler::run() {
     if (readRequest(socket)) {
         sendReply(socket);
     }
-    else {
-        emit error(socket.errorString());
-    }
 
     socket.disconnectFromHost();
     socket.waitForDisconnected();
@@ -30,19 +27,15 @@ void IncomingConnectionHandler::run() {
 
 bool IncomingConnectionHandler::readRequest(QTcpSocket& socket) {
     const int timeout = 5 * 1000;
-    QDataStream in(&socket);
-    QString base58Request;
 
     do {
         if (!socket.waitForReadyRead(timeout)) {
             emit error(socket.errorString());
             return false;
         }
-        in.startTransaction();
-        in >> base58Request;
-    } while (!in.commitTransaction());
+    } while (true);
 
-    return true;
+    return true;//requestMaster_.validateRequest(base58Request);
 }
 
 void IncomingConnectionHandler::sendReply(QTcpSocket&) {}
