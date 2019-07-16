@@ -5,6 +5,10 @@
 namespace cscrypto {
 namespace gui {
 
+namespace {
+const QString kLogPrefix = QObject::tr("Client error: ");
+} // namespace
+
 Client::Client(QObject* parent)
         : QObject(parent),
           socket_(new QTcpSocket(this)),
@@ -29,7 +33,7 @@ void Client::onReadyRead() {
         socket_->read(reinterpret_cast<char*>(&serverReqType_), qint64(sizeof(serverReqType_)));
         if (serverReqType_ == RequestMaster::Unknown) {
             socket_->abort();
-            emit error(tr("Invalid data from server."));
+            emit error(kLogPrefix + tr("Invalid data from server."));
             return;
         }
     }
@@ -44,7 +48,7 @@ void Client::onReadyRead() {
     socket_->read(reinterpret_cast<char*>(serverReplyBytes.data()), numBytesToReceive);
 
     if (!requestMaster_.validate(serverReqType_, serverReplyBytes)) {
-        emit error(tr("Invalid data from server."));
+        emit error(kLogPrefix + tr("Invalid data from server."));
         return;
     }
 }
@@ -54,14 +58,14 @@ void Client::socketErrorHandler(QAbstractSocket::SocketError errorType) {
         case QAbstractSocket::RemoteHostClosedError :
             break;
         case QAbstractSocket::HostNotFoundError :
-            emit error(tr("Host not found. Please check host name."));
+            emit error(kLogPrefix + tr("Host not found. Please check host name."));
             break;
         case QAbstractSocket::ConnectionRefusedError :
-            emit error(tr("The connection refused by the peer. "
-                          "Make sure that the server is running and check host name."));
+            emit error(kLogPrefix + tr("The connection refused by the peer. "
+                                       "Make sure that the server is running and check host name."));
             break;
         default:
-            emit error(tr("The following error occured: ") + socket_->errorString());
+            emit error(kLogPrefix + tr("The following error occured: ") + socket_->errorString());
     }
 }
 

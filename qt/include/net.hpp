@@ -9,6 +9,7 @@
 namespace cscrypto {
 namespace gui {
 
+class Client;
 class Server;
 
 class Net : public QObject {
@@ -28,6 +29,7 @@ private slots:
 
 private:
     Server* server_;
+    Client* client_;
 };
 } // namespace gui
 } // namespace cscrypto

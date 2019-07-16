@@ -3,6 +3,7 @@
 #include <QList>
 #include <QtNetwork>
 
+#include <client.hpp>
 #include <server.hpp>
 
 namespace cscrypto {
@@ -12,7 +13,9 @@ namespace {
 const quint16 kServerPort = 12345;
 } // namespace
 
-Net::Net(QObject* parent) : QObject(parent), server_(nullptr) {}
+Net::Net(QObject* parent) : QObject(parent), server_(nullptr), client_(new Client(this)) {
+    connect(client_, &Client::error, this, &Net::errorHandler);
+}
 
 void Net::createServer(const KeyPair& serverKeys) {
     server_ = new Server(serverKeys, this);
