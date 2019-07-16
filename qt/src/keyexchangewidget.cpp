@@ -31,6 +31,8 @@ KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
           canEnableIncomingConnections_(true) {
     ownKeysView_->setModel(ownKeysModel_);
     importedKeysView_->setModel(&importedKeysModel_);
+    connect(&network_, &Net::error, this, &KeyExchangeWidget::networkMessageHandler);
+    connect(&network_, &Net::message, this, &KeyExchangeWidget::networkMessageHandler);
     tuneLayout();
 }
 
@@ -97,6 +99,7 @@ void KeyExchangeWidget::setOwnKey() {
     ownKeyOk_ = true;
     if (canEnableIncomingConnections_) {
         emit canEnableIncomingConnections(true);
+        canEnableIncomingConnections_ = false;
     }
     if (importedKeyOk_) {
         emit canSetUpSessionKey(true);
@@ -124,9 +127,12 @@ void KeyExchangeWidget::fillLowLayout(QLayout* l) {
 
 void KeyExchangeWidget::enableIncomingConnections() {
     serverBtn_->setEnabled(false);
-    QString ownPubKey = ownKeysModel_->data(ownKeysView_->currentIndex()).toString();
-    toStatusBar(statusBar_, tr("Incoming connections enabled with key: ") + ownPubKey);
+    auto keys = ownKeysModel_->getKeyPair(ownKeysView_->currentIndex());
+    network_.createServer(keys);
 }
 
+void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
+    toStatusBar(statusBar_, msg);
+}
 } // namespace gui
 } // namespace cscrypto

@@ -4,6 +4,8 @@
 #include <QString>
 #include <QWidget>
 
+#include <net.hpp>
+
 class QHBoxLayout;
 class QLabel;
 class QLayout;
@@ -38,6 +40,7 @@ private:
     void inspectKeyIdText(const QString&);
 
     void enableIncomingConnections();
+    void networkMessageHandler(const QString& msg);
 
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
@@ -53,6 +56,8 @@ private:
     bool ownKeyOk_;
     bool importedKeyOk_;
     bool canEnableIncomingConnections_;
+
+    Net network_;
 };
 
 } // namespace gui
