@@ -27,7 +27,8 @@ KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
           importedKeysModel_(importedKeysModel),
           importedKeysView_(new QTableView(this)),
           ownKeyOk_(false),
-          importedKeyOk_(false) {
+          importedKeyOk_(false),
+          canEnableIncomingConnections_(true) {
     ownKeysView_->setModel(ownKeysModel_);
     importedKeysView_->setModel(&importedKeysModel_);
     tuneLayout();
@@ -94,6 +95,9 @@ void KeyExchangeWidget::setOwnKey() {
     ownKeySelectedLbl_->setText(tr("Own key: ") + pubKey);
     toStatusBar(statusBar_, tr("New own key for key exchange has been selected."));
     ownKeyOk_ = true;
+    if (canEnableIncomingConnections_) {
+        emit canEnableIncomingConnections(true);
+    }
     if (importedKeyOk_) {
         emit canSetUpSessionKey(true);
     }
@@ -103,14 +107,25 @@ void KeyExchangeWidget::fillLowLayout(QLayout* l) {
     QPushButton* b = new QPushButton(tr("Set up session key"), this);
     b->setEnabled(false);
     l->addWidget(b);
+    serverBtn_ = new QPushButton(tr("Enable incoming connections"), this);
+    serverBtn_->setEnabled(false);
+    l->addWidget(serverBtn_);
     l->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
     connect(this, &KeyExchangeWidget::canSetUpSessionKey, b, &QPushButton::setEnabled);
+    connect(this, &KeyExchangeWidget::canEnableIncomingConnections, serverBtn_, &QPushButton::setEnabled);
+    connect(serverBtn_, &QPushButton::clicked, this, &KeyExchangeWidget::enableIncomingConnections);
 
     QLabel* idLbl = new QLabel(tr("Type imported key's id:"), this);
     QLineEdit* idLineEdit = new QLineEdit(this);
     l->addWidget(idLbl);
     l->addWidget(idLineEdit);
     connect(idLineEdit, &QLineEdit::textEdited, this, &KeyExchangeWidget::inspectKeyIdText);
+}
+
+void KeyExchangeWidget::enableIncomingConnections() {
+    serverBtn_->setEnabled(false);
+    QString ownPubKey = ownKeysModel_->data(ownKeysView_->currentIndex()).toString();
+    toStatusBar(statusBar_, tr("Incoming connections enabled with key: ") + ownPubKey);
 }
 
 } // namespace gui

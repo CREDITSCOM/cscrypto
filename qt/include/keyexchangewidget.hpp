@@ -8,6 +8,7 @@ class QHBoxLayout;
 class QLabel;
 class QLayout;
 class QListView;
+class QPushButton;
 class QStatusBar;
 class QSqlTableModel;
 class QTableView;
@@ -26,6 +27,7 @@ public:
 
 signals:
     void canSetUpSessionKey(bool);
+    void canEnableIncomingConnections(bool);
 
 private:
     void tuneLayout();
@@ -35,6 +37,8 @@ private:
     void setOwnKey();
     void inspectKeyIdText(const QString&);
 
+    void enableIncomingConnections();
+
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;
     QListView* ownKeysView_;
@@ -42,11 +46,13 @@ private:
     QTableView* importedKeysView_;
     QLabel* ownKeySelectedLbl_;
     QLabel* importedKeySelectedLbl_;
+    QPushButton* serverBtn_;
 
     QString importedKey_;
 
     bool ownKeyOk_;
     bool importedKeyOk_;
+    bool canEnableIncomingConnections_;
 };
 
 } // namespace gui
