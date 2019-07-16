@@ -8,18 +8,25 @@
 namespace cscrypto {
 namespace gui {
 
-RequestMaster::RequestMaster(const KeyPair& ownKeys, bool serverSide)
-        : ownKeys_(ownKeys), serverSide_(serverSide) {}
+RequestMaster::RequestMaster(const KeyPair& ownKeys, bool serverSide, QObject* parent)
+        : QObject(parent), ownKeys_(ownKeys), serverSide_(serverSide) {
+    validOwnKeys_ = cscrypto::validateKeyPair(ownKeys.first, ownKeys.second);
+}
 
-cscrypto::Bytes RequestMaster::formReply() {
-    if (containingType_ != KeyExchangeQuery && containingType_ != KeyExchangeReply) {
+void RequestMaster::setOwnKeys(const KeyPair& ownKeys) {
+    ownKeys_ = ownKeys;
+    validOwnKeys_ = true;
+}
+
+cscrypto::Bytes RequestMaster::form(RequestType reqType) {
+    if (!validOwnKeys_) {
         return {};
     }
 
-    cscrypto::Bytes result(size_t(requestSize(KeyExchangeReply)));
+    cscrypto::Bytes result(size_t(requestSize(reqType)));
 
-    result[0] = KeyExchangeReply;
-    int curPos = sizeof(KeyExchangeReply);
+    result[0] = reqType;
+    int curPos = sizeof(reqType);
 
     std::copy(ownKeys_.first.begin(), ownKeys_.first.end(), result.begin() + curPos);
     curPos += cscrypto::kPublicKeySize;
@@ -34,7 +41,9 @@ cscrypto::Bytes RequestMaster::formReply() {
     auto signature = cscrypto::generateSignature(ownKeys_.second, result.data(), result.size() - cscrypto::kSignatureSize);
     std::copy(signature.begin(), signature.end(), result.begin() + curPos);
 
-    formCommonKeys();
+    if (reqType == KeyExchangeReply) {
+        formCommonKeys();
+    }
 
     return result;
 }
@@ -70,7 +79,11 @@ int RequestMaster::requestSize(RequestType type) {
     return res;
 }
 
-bool RequestMaster::validateRequest(RequestType type, const cscrypto::Bytes& request) {
+bool RequestMaster::validate(RequestType type, const cscrypto::Bytes& request) {
+    if (!validOwnKeys_) {
+        return false;
+    }
+
     if (request.size() != size_t(requestSize(type))) {
         return false;
     }
@@ -93,7 +106,10 @@ bool RequestMaster::validateRequest(RequestType type, const cscrypto::Bytes& req
         return false;
     }
 
-    containingType_ = type;
+    if (type == KeyExchangeReply) {
+        formCommonKeys();
+    }
+
     return true;
 }
 
@@ -113,6 +129,5 @@ bool RequestMaster::verifySenderPublicKey() {
     QString isTrusted = query.value(rec.indexOf("Trusted")).toString();
     return isTrusted == "yes";
 }
-
 } // namespace gui
 } // namespace cscrypto

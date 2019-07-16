@@ -63,7 +63,7 @@ bool IncomingConnectionHandler::readRequest(QTcpSocket& socket) {
     request.resize(size_t(numBytesToReceive));
     socket.read(reinterpret_cast<char*>(request.data()), numBytesToReceive);
 
-    if (!requestMaster_.validateRequest(reqType, request)) {
+    if (!requestMaster_.validate(reqType, request)) {
         emit error(tr("Request master: invalid request!"));
         return false;
     }
@@ -72,7 +72,7 @@ bool IncomingConnectionHandler::readRequest(QTcpSocket& socket) {
 }
 
 void IncomingConnectionHandler::sendReply(QTcpSocket& socket) {
-    cscrypto::Bytes reply = requestMaster_.formReply();
+    cscrypto::Bytes reply = requestMaster_.form(RequestMaster::RequestType::KeyExchangeReply);
     socket.write(reinterpret_cast<char*>(reply.data()), qint64(reply.size()));
 }
 } // namespace gui
