@@ -13,7 +13,7 @@ const int kSocketTimeout = 5 * 1000;
 } // namespace
 
 IncomingConnectionHandler::IncomingConnectionHandler(const KeyPair& ownKeys, qintptr socketDescriptor, QObject* parent)
-        : QThread(parent), socketDescriptor_(socketDescriptor), requestMaster_(true, ownKeys) {
+        : QThread(parent), socketDescriptor_(socketDescriptor), requestMaster_(true, true, ownKeys) {
     connect(&requestMaster_, &RequestMaster::newCommonSecretKeyPair, this, &IncomingConnectionHandler::requestMasterSkHandler);
 }
 

@@ -12,7 +12,7 @@ const QString kLogPrefix = QObject::tr("Client error: ");
 Client::Client(QObject* parent)
         : QObject(parent),
           socket_(new QTcpSocket(this)),
-          requestMaster_(false) {
+          requestMaster_(false, false) {
     connect(socket_, &QTcpSocket::readyRead, this, &Client::onReadyRead);
     connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Client::socketErrorHandler);
 }

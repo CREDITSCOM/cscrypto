@@ -8,10 +8,8 @@
 namespace cscrypto {
 namespace gui {
 
-RequestMaster::RequestMaster(bool serverSide, const KeyPair& ownKeys, QObject* parent)
-        : QObject(parent), ownKeys_(ownKeys), serverSide_(serverSide) {
-    validOwnKeys_ = cscrypto::validateKeyPair(ownKeys.first, ownKeys.second);
-}
+RequestMaster::RequestMaster(bool validKeys, bool serverSide, const KeyPair& ownKeys, QObject* parent)
+        : QObject(parent), ownKeys_(ownKeys), serverSide_(serverSide), validOwnKeys_(validKeys) {}
 
 void RequestMaster::setOwnKeys(const KeyPair& ownKeys) {
     ownKeys_ = ownKeys;
