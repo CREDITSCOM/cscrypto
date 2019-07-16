@@ -16,6 +16,7 @@ Net::Net(QObject* parent) : QObject(parent), server_(nullptr) {}
 
 void Net::createServer(const KeyPair& serverKeys) {
     server_ = new Server(serverKeys, this);
+    connect(server_, &Server::error, this, &Net::errorHandler);
     if (!server_->listen(QHostAddress::Any, kServerPort)) {
         emit error(tr("Network error: unable to start server: ") + server_->errorString());
         server_->close();
@@ -37,6 +38,10 @@ void Net::createServer(const KeyPair& serverKeys) {
                                                        serverKeys.first.data() + serverKeys.first.size()).c_str());
     emit message(tr("Networ message: server started on IP %1, port %2, with key %3")
                  .arg(ipAddress).arg(kServerPort).arg(keyPubKey));
+}
+
+void Net::errorHandler(const QString& msg) {
+    emit error(tr("Network error: ") + msg);
 }
 
 } // namespace gui

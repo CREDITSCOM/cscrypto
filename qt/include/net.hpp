@@ -23,6 +23,9 @@ signals:
     void error(const QString& msg);
     void message(const QString& msg);
 
+private slots:
+    void errorHandler(const QString& msg);
+
 private:
     Server* server_;
 };
