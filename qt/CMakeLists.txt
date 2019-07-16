@@ -18,6 +18,7 @@ set(HEADERS
   include/keyexchangewidget.hpp
   include/keylistmodel.hpp
   include/server.hpp
+  include/requestmaster.hpp
   include/storagewidget.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
@@ -40,6 +41,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/keylistmodel.cpp
   src/server.cpp
   src/storagewidget.cpp
+  src/requestmaster.cpp
   include/common.hpp
   include/databaseopener.hpp
   include/utils.hpp
