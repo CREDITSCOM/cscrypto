@@ -14,8 +14,8 @@ namespace {
 const int kSocketTimeout = 5 * 1000;
 } // namespace
 
-IncomingConnectionHandler::IncomingConnectionHandler(qintptr socketDescriptor, QObject* parent)
-        : QThread(parent), socketDescriptor_(socketDescriptor) {}
+IncomingConnectionHandler::IncomingConnectionHandler(const KeyPair& ownKeys, qintptr socketDescriptor, QObject* parent)
+        : QThread(parent), socketDescriptor_(socketDescriptor), requestMaster_(ownKeys) {}
 
 void IncomingConnectionHandler::run() {
     QTcpSocket socket;
@@ -72,8 +72,32 @@ void IncomingConnectionHandler::sendReply(QTcpSocket& socket) {
     socket.write(reinterpret_cast<char*>(reply.data()), qint64(reply.size()));
 }
 
+IncomingConnectionHandler::RequestMaster::RequestMaster (const KeyPair& ownKeys) : ownKeys_(ownKeys) {}
+
 cscrypto::Bytes IncomingConnectionHandler::RequestMaster::formReply() {
-    return {};
+    if (containingType_ != KeyExchangeQuery && containingType_ != KeyExchangeReply) {
+        return {};
+    }
+
+    cscrypto::Bytes result(size_t(requestSize(KeyExchangeReply)));
+
+    result[0] = KeyExchangeReply;
+    int curPos = sizeof(KeyExchangeReply);
+
+    std::copy(ownKeys_.first.begin(), ownKeys_.first.end(), result.begin() + curPos);
+    curPos += cscrypto::kPublicKeySize;
+
+    cscrypto::keyexchange::PubExchangeKey ownExchangeKey;
+    if (!cscrypto::keyexchange::getPubExchangeKey(ownExchangeKey, ownKeys_.second)) {
+        return {};
+    }
+    std::copy(ownExchangeKey.begin(), ownExchangeKey.end(), result.begin() + curPos);
+    curPos += cscrypto::keyexchange::kPubExchangeKeySize;
+
+    auto signature = cscrypto::generateSignature(ownKeys_.second, result.data(), result.size() - cscrypto::kSignatureSize);
+    std::copy(signature.begin(), signature.end(), result.begin() + curPos);
+
+    return result;
 }
 
 int IncomingConnectionHandler::RequestMaster::requestSize(RequestType type) {

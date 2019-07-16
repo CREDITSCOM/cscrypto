@@ -5,7 +5,7 @@
 
 #include <QThread>
 
-#include <cscrypto/cscrypto.hpp>
+#include <common.hpp>
 
 class QString;
 class QTcpSocket;
@@ -17,12 +17,14 @@ class IncomingConnectionHandler : public QThread {
     Q_OBJECT
 
 public:
-    IncomingConnectionHandler(qintptr socketDescriptor, QObject* parent);
+    IncomingConnectionHandler(const KeyPair& ownKeys, qintptr socketDescriptor, QObject* parent);
 
     void run() override;
 
     class RequestMaster {
     public:
+        RequestMaster(const KeyPair& ownKeys);
+
         enum RequestType : uint8_t {
             KeyExchangeQuery,
             KeyExchangeReply,
@@ -44,6 +46,8 @@ public:
         cscrypto::keyexchange::PubExchangeKey exchangePubKey_;
         cscrypto::cipher::CipherKey commonSecretKey_;
         cscrypto::Signature signature_;
+
+        KeyPair ownKeys_;
     };
 
 signals:

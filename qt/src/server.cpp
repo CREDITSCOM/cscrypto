@@ -8,10 +8,10 @@
 namespace cscrypto {
 namespace gui {
 
-Server::Server(QObject* parent) : QTcpServer(parent) {}
+Server::Server(const KeyPair& ownKeys, QObject* parent) : QTcpServer(parent), ownKeys_(ownKeys) {}
 
 void Server::incomingConnection(qintptr socketDecriptor) {
-    IncomingConnectionHandler* thread = new IncomingConnectionHandler(socketDecriptor, this);
+    IncomingConnectionHandler* thread = new IncomingConnectionHandler(ownKeys_, socketDecriptor, this);
     connect(thread, &IncomingConnectionHandler::finished, thread, &IncomingConnectionHandler::deleteLater);
     thread->start();
 }

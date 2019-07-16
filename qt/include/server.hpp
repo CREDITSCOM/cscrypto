@@ -3,6 +3,8 @@
 
 #include <QtNetwork/QTcpServer>
 
+#include <common.hpp>
+
 namespace cscrypto {
 namespace gui {
 
@@ -10,10 +12,12 @@ class Server : public QTcpServer {
     Q_OBJECT
 
 public:
-    Server(QObject* parent = nullptr);
+    Server(const KeyPair&, QObject* parent = nullptr);
 
 protected:
     void incomingConnection(qintptr socketDecriptor) override;
+
+    KeyPair ownKeys_;
 };
 
 } // namespace gui
