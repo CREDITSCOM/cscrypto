@@ -21,7 +21,7 @@ cscrypto::Bytes RequestMaster::form(RequestType reqType) {
         return {};
     }
 
-    cscrypto::Bytes result(size_t(requestSize(reqType)));
+    cscrypto::Bytes result(size_t(requestSize(reqType)) + sizeof(reqType));
 
     result[0] = reqType;
     int curPos = sizeof(reqType);

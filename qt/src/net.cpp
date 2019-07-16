@@ -47,5 +47,8 @@ void Net::errorHandler(const QString& msg) {
     emit error(tr("Network error: ") + msg);
 }
 
+void Net::sendKeyExchangeRequest(const QString& hostName, const KeyPair& ownKeys) {
+    client_->sendKeyExchangeRequest(hostName, kServerPort, ownKeys);
+}
 } // namespace gui
 } // namespace cscrypto

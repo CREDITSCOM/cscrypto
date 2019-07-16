@@ -37,9 +37,12 @@ private:
     void fillLowLayout(QLayout*);
 
     void setOwnKey();
+    void setHostName(const QString&);
     void inspectKeyIdText(const QString&);
 
     void enableIncomingConnections();
+    void sendKeyExchangeRequest();
+    void hostNameEnterDialog();
     void networkMessageHandler(const QString& msg);
 
     QStatusBar& statusBar_;
@@ -52,6 +55,7 @@ private:
     QPushButton* serverBtn_;
 
     QString importedKey_;
+    QString hostName_;
 
     bool ownKeyOk_;
     bool importedKeyOk_;

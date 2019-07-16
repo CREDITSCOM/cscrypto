@@ -19,6 +19,7 @@ public:
     Net(QObject* parent = nullptr);
 
     void createServer(const KeyPair& serverKeys);
+    void sendKeyExchangeRequest(const QString& hostName, const KeyPair& ownKeys);
 
 signals:
     void error(const QString& msg);
