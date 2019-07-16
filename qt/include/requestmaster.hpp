@@ -13,7 +13,7 @@ class RequestMaster : public QObject {
     Q_OBJECT
 
 public:
-    RequestMaster(const KeyPair& ownKeys = KeyPair{}, bool serverSide = true, QObject* parent = nullptr);
+    RequestMaster(bool serverSide = true, const KeyPair& ownKeys = KeyPair{}, QObject* parent = nullptr);
     void setOwnKeys(const KeyPair& ownKeys);
 
     enum RequestType : uint8_t {

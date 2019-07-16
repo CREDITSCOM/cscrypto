@@ -19,7 +19,8 @@ set(HEADERS
   include/keylistmodel.hpp
   include/server.hpp
   include/requestmaster.hpp
-  include/storagewidget.hpp)
+  include/storagewidget.hpp
+  include/client.hpp)
 qt5_wrap_cpp(MOC_FILES ${HEADERS})
 
 qt5_add_resources(
@@ -42,6 +43,7 @@ add_executable(${PROJECT_NAME} ${GUI_TYPE}
   src/server.cpp
   src/storagewidget.cpp
   src/requestmaster.cpp
+  src/client.cpp
   include/common.hpp
   include/databaseopener.hpp
   include/utils.hpp
