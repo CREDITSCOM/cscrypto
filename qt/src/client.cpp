@@ -15,12 +15,16 @@ Client::Client(QObject* parent)
           requestMaster_(false, false) {
     connect(socket_, &QTcpSocket::readyRead, this, &Client::onReadyRead);
     connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Client::socketErrorHandler);
+    connect(socket_, &QTcpSocket::connected, this, &Client::onConnected);
 }
 
 void Client::sendKeyExchangeRequest(QString hostName, quint16 serverPort, const KeyPair& ownKeys) {
     socket_->abort();
     socket_->connectToHost(hostName, serverPort);
     requestMaster_.setOwnKeys(ownKeys);
+}
+
+void Client::onConnected() {
     cscrypto::Bytes request = requestMaster_.form(RequestMaster::RequestType::KeyExchangeQuery);
     socket_->write(reinterpret_cast<char*>(&request), qint64(request.size()));
 }
