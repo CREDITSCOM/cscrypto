@@ -44,6 +44,7 @@ private:
     void sendKeyExchangeRequest();
     void hostNameEnterDialog();
     void networkMessageHandler(const QString& msg);
+    void newKeysHandler(QString b58SendSk, QString b58ReceiveSk);
 
     QStatusBar& statusBar_;
     KeyListModel* ownKeysModel_;

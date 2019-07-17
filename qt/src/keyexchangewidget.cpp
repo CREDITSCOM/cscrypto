@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListView>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSpacerItem>
 #include <QSqlTableModel>
@@ -34,6 +35,7 @@ KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
     importedKeysView_->setModel(&importedKeysModel_);
     connect(&network_, &Net::error, this, &KeyExchangeWidget::networkMessageHandler);
     connect(&network_, &Net::message, this, &KeyExchangeWidget::networkMessageHandler);
+    connect(&network_, &Net::newCommonSecretKeyPair, this, &KeyExchangeWidget::newKeysHandler);
     tuneLayout();
 }
 
@@ -173,6 +175,11 @@ void KeyExchangeWidget::enableIncomingConnections() {
 
 void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
     toStatusBar(statusBar_, msg);
+}
+
+void KeyExchangeWidget::newKeysHandler(QString b58SendSk, QString b58ReceiveSk) {
+    QMessageBox::information(this, tr("New common secret pair has been generated."),
+                             tr("Send secret key: ") + b58SendSk + "\n" + tr("Receive secret key") + b58ReceiveSk);
 }
 } // namespace gui
 } // namespace cscrypto

@@ -17,12 +17,14 @@ public:
 
 signals:
     void error(const QString& msg);
+    void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
 
 protected:
     void incomingConnection(qintptr socketDecriptor) override;
 
 private slots:
     void errorHandler(const QString& msg);
+    void keysFromIncomConHandler(QString b58SendSk, QString b58ReceiveSk);
 
 private:
     KeyPair ownKeys_;

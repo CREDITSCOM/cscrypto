@@ -20,6 +20,7 @@ Net::Net(QObject* parent) : QObject(parent), server_(nullptr), client_(new Clien
 void Net::createServer(const KeyPair& serverKeys) {
     server_ = new Server(serverKeys, this);
     connect(server_, &Server::error, this, &Net::errorHandler);
+    connect(server_, &Server::newCommonSecretKeyPair, this, &Net::newKeysHandler);
     if (!server_->listen(QHostAddress::Any, kServerPort)) {
         emit error(tr("Network error: unable to start server: ") + server_->errorString());
         server_->close();
@@ -49,6 +50,10 @@ void Net::errorHandler(const QString& msg) {
 
 void Net::sendKeyExchangeRequest(const QString& hostName, const KeyPair& ownKeys) {
     client_->sendKeyExchangeRequest(hostName, kServerPort, ownKeys);
+}
+
+void Net::newKeysHandler(QString b58SendSk, QString b58ReceiveSk) {
+    emit newCommonSecretKeyPair(b58SendSk, b58ReceiveSk);
 }
 } // namespace gui
 } // namespace cscrypto
