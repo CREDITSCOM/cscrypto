@@ -1,9 +1,17 @@
 #include <requestmaster.hpp>
 
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlRecord>
+#include <QtSql>
 
 #include <QVariant>
+
+#include <common.hpp>
+
+namespace {
+inline void closeDb(QSqlDatabase& db, const QString& connectionName) {
+    db.close();
+    QSqlDatabase::removeDatabase(connectionName);
+}
+} // namespace
 
 namespace cscrypto {
 namespace gui {
@@ -119,9 +127,19 @@ bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& msg) {
 }
 
 bool RequestMaster::verifySenderPublicKey() {
+    int random;
+    cscrypto::fillBufWithRandomBytes(&random, sizeof(random));
+    QString connectionName = QString::number(random);
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+    db.setDatabaseName("cscrypto_db.sqlite");
+    if (!db.open()) {
+        return false;
+    }
+
     QString b58SenderPub = QString::fromUtf8(EncodeBase58(senderPubKey_.data(), senderPubKey_.data() + senderPubKey_.size()).c_str());
-    QSqlQuery query;
+    QSqlQuery query(db);
     if (!query.exec("SELECT * FROM publicKeys")) {
+        closeDb(db, connectionName);
         return false;
     }
 
@@ -129,11 +147,14 @@ bool RequestMaster::verifySenderPublicKey() {
     while (query.next()) {
         if (query.value(rec.indexOf("ImportedKey")).toString() == b58SenderPub) {
             if (query.value(rec.indexOf("Trusted")).toString() == "yes") {
+                closeDb(db, connectionName);
                 return true;
             }
+            closeDb(db, connectionName);
             return false;
         }
     }
+    closeDb(db, connectionName);
     return false;
 }
 } // namespace gui
