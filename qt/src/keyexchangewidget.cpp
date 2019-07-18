@@ -11,6 +11,7 @@
 #include <QSqlTableModel>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStringList>
 #include <QTableView>
 #include <QVBoxLayout>
 
@@ -20,7 +21,8 @@
 namespace cscrypto {
 namespace gui {
 
-KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
+KeyExchangeWidget::KeyExchangeWidget(QStringList& encryptionKeys, QStringList& decryptionKeys,
+                                     QStatusBar& sb, KeyListModel* ownKeysModel,
                                      QSqlTableModel& importedKeysModel, QWidget* parent)
         : QWidget(parent),
           statusBar_(sb),
@@ -30,7 +32,9 @@ KeyExchangeWidget::KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
           importedKeysView_(new QTableView(this)),
           ownKeyOk_(false),
           importedKeyOk_(false),
-          canEnableIncomingConnections_(true) {
+          canEnableIncomingConnections_(true),
+          encryptionKeys_(encryptionKeys),
+          decryptionKeys_(decryptionKeys) {
     ownKeysView_->setModel(ownKeysModel_);
     importedKeysView_->setModel(&importedKeysModel_);
     connect(&network_, &Net::error, this, &KeyExchangeWidget::networkMessageHandler);
@@ -180,6 +184,8 @@ void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
 void KeyExchangeWidget::newKeysHandler(const QString& b58SendSk, const QString& b58ReceiveSk) {
     QMessageBox::information(this, tr("New common secret pair has been generated."),
                              tr("Send secret key:\n") + b58SendSk + "\n" + tr("Receive secret key:\n") + b58ReceiveSk);
+    encryptionKeys_.push_back(b58SendSk);
+    decryptionKeys_.push_back(b58ReceiveSk);
 }
 } // namespace gui
 } // namespace cscrypto

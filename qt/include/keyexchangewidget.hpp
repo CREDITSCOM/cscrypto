@@ -13,6 +13,7 @@ class QListView;
 class QPushButton;
 class QStatusBar;
 class QSqlTableModel;
+class QStringList;
 class QTableView;
 
 namespace cscrypto {
@@ -24,7 +25,8 @@ class KeyExchangeWidget : public QWidget {
     Q_OBJECT
 
 public:
-    KeyExchangeWidget(QStatusBar& sb, KeyListModel* ownKeysModel,
+    KeyExchangeWidget(QStringList& encryptionKeys, QStringList& decryptionKeys,
+                      QStatusBar& sb, KeyListModel* ownKeysModel,
                       QSqlTableModel& importedKeysModel, QWidget* parent = nullptr);
 
 signals:
@@ -63,6 +65,8 @@ private:
     bool canEnableIncomingConnections_;
 
     Net network_;
+    QStringList& encryptionKeys_;
+    QStringList& decryptionKeys_;
 };
 
 } // namespace gui

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSpacerItem>
+#include <QStringListModel>
 #include <QVBoxLayout>
 
 #include <common.hpp>
@@ -15,7 +16,9 @@
 namespace cscrypto {
 namespace gui {
 
-CipherWidget::CipherWidget(QStatusBar& sb, QWidget* parent)
+CipherWidget::CipherWidget(QStringListModel& encryptionKeys,
+                           QStringListModel& decryptionKeys,
+                           QStatusBar& sb, QWidget* parent)
         : QWidget(parent),
           statusBar_(sb),
           sourceFileLbl_(new QLabel(tr("No source file loaded"), this)),
@@ -24,7 +27,9 @@ CipherWidget::CipherWidget(QStatusBar& sb, QWidget* parent)
           targetFileLoaded_(false),
           encryptionMode_(false),
           decryptionMode_(false),
-          startBtn_(new QPushButton(tr("Start"), this)) {
+          startBtn_(new QPushButton(tr("Start"), this)),
+          encryptionKeys_(encryptionKeys),
+          decryptionKeys_(decryptionKeys) {
     tuneLayouts();
     startBtn_->setEnabled(false);
 }

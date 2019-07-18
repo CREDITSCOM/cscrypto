@@ -7,6 +7,7 @@ class QLabel;
 class QLayout;
 class QPushButton;
 class QStatusBar;
+class QStringListModel;
 class QVBoxLayout;
 
 namespace cscrypto {
@@ -18,7 +19,9 @@ class CipherWidget : public QWidget {
     Q_OBJECT
 
 public:
-    CipherWidget(QStatusBar& sb, QWidget* parent = nullptr);
+    CipherWidget(QStringListModel& encryptionKeys_,
+                 QStringListModel& decryptionKeys_,
+                 QStatusBar& sb, QWidget* parent = nullptr);
 
 signals:
     void encryptionModeActivated(bool);
@@ -51,6 +54,8 @@ private:
     bool decryptionMode_;
 
     QPushButton* startBtn_;
+    QStringListModel& encryptionKeys_;
+    QStringListModel& decryptionKeys_;
 };
 
 } // namespace gui

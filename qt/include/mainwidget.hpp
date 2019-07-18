@@ -4,6 +4,8 @@
 #include <map>
 
 #include <QSqlTableModel>
+#include <QStringList>
+#include <QStringListModel>
 #include <QWidget>
 
 #include <common.hpp>
@@ -32,6 +34,11 @@ private:
     KeyListModel keysModel_;
     DatabaseOpener dbOpener_;
     QSqlTableModel importedKeysModel_;
+
+    QStringListModel encryptionKeysModel_;
+    QStringListModel decryptionKeysModel_;
+    QStringList encryptionKeys_;
+    QStringList decryptionKeys_;
 };
 
 } // namespace gui

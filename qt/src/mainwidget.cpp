@@ -26,6 +26,8 @@ MainWidget::MainWidget(QWidget* parent)
           tabs_(new QTabWidget(this)),
           statusBar_(new QStatusBar(this)),
           dbOpener_(kDatabaseName) {
+    encryptionKeysModel_.setStringList(encryptionKeys_);
+    decryptionKeysModel_.setStringList(decryptionKeys_);
     fillWidgets();
     fillTabs();
 
@@ -52,11 +54,14 @@ void MainWidget::fillWidgets() {
     widgets_.insert(std::make_pair("keygen", new KeyGenWidget(*statusBar_, &keysModel_, tabs_)));
     widgets_.insert(std::make_pair("sign", new SignWidget(*statusBar_, &keysModel_, tabs_)));
     widgets_.insert(std::make_pair("hash", new HashWidget(*statusBar_, tabs_)));
-    widgets_.insert(std::make_pair("cipher", new CipherWidget(*statusBar_, tabs_)));
+    widgets_.insert(std::make_pair("cipher", new CipherWidget(encryptionKeysModel_,
+                                                              decryptionKeysModel_,
+                                                              *statusBar_, tabs_)));
     if (dbOpener_.isOpened()) {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
         widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, importedKeysModel_, tabs_)));
-        widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(*statusBar_, &keysModel_, importedKeysModel_, tabs_)));
+        widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(encryptionKeys_, decryptionKeys_,
+                                                                             *statusBar_, &keysModel_, importedKeysModel_, tabs_)));
     }
     else {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" not opened. Storage widget unavailable: ") + QSqlDatabase::database().lastError().text());
