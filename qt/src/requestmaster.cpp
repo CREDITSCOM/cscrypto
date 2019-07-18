@@ -100,7 +100,10 @@ bool RequestMaster::validate(RequestType type, const cscrypto::Bytes& request) {
               request.begin() + curPos + cscrypto::kSignatureSize,
               signature_.begin());
 
-    if (!checkRequestSignature(request)) {
+    cscrypto::Bytes signedMessage(request.size() - cscrypto::kSignatureSize + sizeof(type));
+    signedMessage[0] = type;
+    std::copy(request.begin(), request.end() - cscrypto::kSignatureSize, signedMessage.begin() + sizeof(type));
+    if (!checkRequestSignature(signedMessage)) {
         return false;
     }
 
@@ -111,8 +114,8 @@ bool RequestMaster::validate(RequestType type, const cscrypto::Bytes& request) {
     return true;
 }
 
-bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& request) {
-    return cscrypto::verifySignature(signature_, senderPubKey_, request.data(), request.size() - cscrypto::kSignatureSize);
+bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& msg) {
+    return cscrypto::verifySignature(signature_, senderPubKey_, msg.data(), msg.size());
 }
 
 bool RequestMaster::verifySenderPublicKey() {
