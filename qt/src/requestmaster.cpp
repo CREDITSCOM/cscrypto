@@ -118,7 +118,7 @@ bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& request) {
 bool RequestMaster::verifySenderPublicKey() {
     QString b58SenderPub = QString::fromUtf8(EncodeBase58(senderPubKey_.data(), senderPubKey_.data() + senderPubKey_.size()).c_str());
     QSqlQuery query;
-    bool ok = query.exec("SELECT * publicKeys WHERE ImportedKey=" + b58SenderPub);
+    bool ok = query.exec("SELECT * FROM publicKeys WHERE ImportedKey=" + b58SenderPub);
     QSqlRecord rec = query.record();
     if (!ok || !query.next()) {
         return false;
