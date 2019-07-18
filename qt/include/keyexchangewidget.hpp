@@ -33,7 +33,7 @@ signals:
 
 private:
     void tuneLayout();
-    void fillUpperLaytout(QHBoxLayout*);
+    void fillUpperLayout(QHBoxLayout*);
     void fillLowLayout(QLayout*);
 
     void setOwnKey();

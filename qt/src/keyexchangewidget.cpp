@@ -44,7 +44,7 @@ void KeyExchangeWidget::tuneLayout() {
     QHBoxLayout* upperLayout = new QHBoxLayout;
     QHBoxLayout* lowLayout = new QHBoxLayout;
 
-    fillUpperLaytout(upperLayout);
+    fillUpperLayout(upperLayout);
     fillLowLayout(lowLayout);
 
     mainLayout->addLayout(upperLayout);
@@ -52,7 +52,7 @@ void KeyExchangeWidget::tuneLayout() {
     setLayout(mainLayout);
 }
 
-void KeyExchangeWidget::fillUpperLaytout(QHBoxLayout* l) {
+void KeyExchangeWidget::fillUpperLayout(QHBoxLayout* l) {
     QVBoxLayout* ownKeysLayout = new QVBoxLayout;
     QVBoxLayout* importedKeysLayout = new QVBoxLayout;
 
@@ -179,7 +179,7 @@ void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
 
 void KeyExchangeWidget::newKeysHandler(QString b58SendSk, QString b58ReceiveSk) {
     QMessageBox::information(this, tr("New common secret pair has been generated."),
-                             tr("Send secret key: ") + b58SendSk + "\n" + tr("Receive secret key") + b58ReceiveSk);
+                             tr("Send secret key:\n") + b58SendSk + "\n" + tr("Receive secret key:\n") + b58ReceiveSk);
 }
 } // namespace gui
 } // namespace cscrypto
