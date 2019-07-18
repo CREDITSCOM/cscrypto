@@ -177,7 +177,7 @@ void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
     toStatusBar(statusBar_, msg);
 }
 
-void KeyExchangeWidget::newKeysHandler(QString b58SendSk, QString b58ReceiveSk) {
+void KeyExchangeWidget::newKeysHandler(const QString& b58SendSk, const QString& b58ReceiveSk) {
     QMessageBox::information(this, tr("New common secret pair has been generated."),
                              tr("Send secret key:\n") + b58SendSk + "\n" + tr("Receive secret key:\n") + b58ReceiveSk);
 }

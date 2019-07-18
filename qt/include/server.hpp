@@ -17,7 +17,7 @@ public:
 
 signals:
     void error(const QString& msg);
-    void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
+    void newCommonSecretKeyPair(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 protected:
     void incomingConnection(qintptr socketDecriptor) override;

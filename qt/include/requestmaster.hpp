@@ -30,7 +30,7 @@ public:
     cscrypto::Bytes form(RequestType reqType);
 
 signals:
-    void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
+    void newCommonSecretKeyPair(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private:
     bool verifySenderPublicKey(const QString& connectionName);

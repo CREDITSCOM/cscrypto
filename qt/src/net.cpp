@@ -53,7 +53,7 @@ void Net::sendKeyExchangeRequest(const QString& hostName, const KeyPair& ownKeys
     client_->sendKeyExchangeRequest(hostName, kServerPort, ownKeys);
 }
 
-void Net::newKeysHandler(QString b58SendSk, QString b58ReceiveSk) {
+void Net::newKeysHandler(const QString& b58SendSk, const QString& b58ReceiveSk) {
     emit newCommonSecretKeyPair(b58SendSk, b58ReceiveSk);
 }
 } // namespace gui

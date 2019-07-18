@@ -24,11 +24,11 @@ public:
 signals:
     void error(const QString& msg);
     void message(const QString& msg);
-    void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
+    void newCommonSecretKeyPair(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private slots:
     void errorHandler(const QString& msg);
-    void newKeysHandler(QString b58SendSk, QString b58ReceiveSk);
+    void newKeysHandler(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private:
     Server* server_;

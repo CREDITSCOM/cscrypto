@@ -22,10 +22,10 @@ public:
 
 signals:
     void error(const QString&);
-    void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
+    void newCommonSecretKeyPair(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private slots:
-    void requestMasterSkHandler(QString b58SendSk, QString b58ReceiveSk);
+    void requestMasterSkHandler(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private:
     bool readRequest(QTcpSocket&);

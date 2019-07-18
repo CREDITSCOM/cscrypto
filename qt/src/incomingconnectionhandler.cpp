@@ -17,7 +17,7 @@ IncomingConnectionHandler::IncomingConnectionHandler(const KeyPair& ownKeys, qin
     connect(&requestMaster_, &RequestMaster::newCommonSecretKeyPair, this, &IncomingConnectionHandler::requestMasterSkHandler);
 }
 
-void IncomingConnectionHandler::requestMasterSkHandler(QString b58SendSk, QString b58ReceiveSk) {
+void IncomingConnectionHandler::requestMasterSkHandler(const QString& b58SendSk, const QString& b58ReceiveSk) {
     emit newCommonSecretKeyPair(b58SendSk, b58ReceiveSk);
 }
 
