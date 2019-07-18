@@ -118,14 +118,20 @@ bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& request) {
 bool RequestMaster::verifySenderPublicKey() {
     QString b58SenderPub = QString::fromUtf8(EncodeBase58(senderPubKey_.data(), senderPubKey_.data() + senderPubKey_.size()).c_str());
     QSqlQuery query;
-    bool ok = query.exec("SELECT * FROM publicKeys WHERE ImportedKey=" + b58SenderPub);
-    QSqlRecord rec = query.record();
-    if (!ok || !query.next()) {
+    if (!query.exec("SELECT * FROM publicKeys")) {
         return false;
     }
 
-    QString isTrusted = query.value(rec.indexOf("Trusted")).toString();
-    return isTrusted == "yes";
+    QSqlRecord rec = query.record();
+    while (query.next()) {
+        if (query.value(rec.indexOf("ImportedKey")).toString() == b58SenderPub) {
+            if (query.value(rec.indexOf("Trusted")).toString() == "yes") {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
 }
 } // namespace gui
 } // namespace cscrypto
