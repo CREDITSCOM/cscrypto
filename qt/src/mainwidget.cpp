@@ -26,8 +26,6 @@ MainWidget::MainWidget(QWidget* parent)
           tabs_(new QTabWidget(this)),
           statusBar_(new QStatusBar(this)),
           dbOpener_(kDatabaseName) {
-    encryptionKeysModel_.setStringList(encryptionKeys_);
-    decryptionKeysModel_.setStringList(decryptionKeys_);
     fillWidgets();
     fillTabs();
 
@@ -60,7 +58,7 @@ void MainWidget::fillWidgets() {
     if (dbOpener_.isOpened()) {
         toStatusBar(*statusBar_, tr(kDatabaseName) + tr(" opened."));
         widgets_.insert(std::make_pair("storage", new StorageWidget(*statusBar_, importedKeysModel_, tabs_)));
-        widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(encryptionKeys_, decryptionKeys_,
+        widgets_.insert(std::make_pair("key exchange", new KeyExchangeWidget(encryptionKeysModel_, decryptionKeysModel_,
                                                                              *statusBar_, &keysModel_, importedKeysModel_, tabs_)));
     }
     else {

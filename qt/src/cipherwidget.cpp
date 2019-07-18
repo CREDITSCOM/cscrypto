@@ -1,5 +1,6 @@
 #include "cipherwidget.hpp"
 
+#include <QComboBox>
 #include <QFileDialog>
 #include <QLabel>
 #include <QPushButton>
@@ -81,6 +82,12 @@ void CipherWidget::fillMiddleLayout(QVBoxLayout* l) {
 
     l->addLayout(l2);
     l->addWidget(targetFileLbl_);
+
+    QLabel* encLbl = new QLabel(tr("Available encryption keys:"), this);
+    l->addWidget(encLbl);
+    encKeysComboBox_ = new QComboBox(this);
+    l->addWidget(encKeysComboBox_);
+    encKeysComboBox_->setModel(&encryptionKeys_);
 
     connect(loadSrcBtn, &QPushButton::clicked, this, &CipherWidget::getSrcFileName);
     connect(loadTrgBtn, &QPushButton::clicked, this, &CipherWidget::getTrgFileName);

@@ -4,7 +4,6 @@
 #include <map>
 
 #include <QSqlTableModel>
-#include <QStringList>
 #include <QStringListModel>
 #include <QWidget>
 
@@ -37,8 +36,6 @@ private:
 
     QStringListModel encryptionKeysModel_;
     QStringListModel decryptionKeysModel_;
-    QStringList encryptionKeys_;
-    QStringList decryptionKeys_;
 };
 
 } // namespace gui

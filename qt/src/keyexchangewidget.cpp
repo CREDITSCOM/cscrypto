@@ -11,7 +11,7 @@
 #include <QSqlTableModel>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QStringList>
+#include <QStringListModel>
 #include <QTableView>
 #include <QVBoxLayout>
 
@@ -21,7 +21,7 @@
 namespace cscrypto {
 namespace gui {
 
-KeyExchangeWidget::KeyExchangeWidget(QStringList& encryptionKeys, QStringList& decryptionKeys,
+KeyExchangeWidget::KeyExchangeWidget(QStringListModel& encryptionKeysModel, QStringListModel& decryptionKeysModel,
                                      QStatusBar& sb, KeyListModel* ownKeysModel,
                                      QSqlTableModel& importedKeysModel, QWidget* parent)
         : QWidget(parent),
@@ -33,8 +33,8 @@ KeyExchangeWidget::KeyExchangeWidget(QStringList& encryptionKeys, QStringList& d
           ownKeyOk_(false),
           importedKeyOk_(false),
           canEnableIncomingConnections_(true),
-          encryptionKeys_(encryptionKeys),
-          decryptionKeys_(decryptionKeys) {
+          encryptionKeysModel_(encryptionKeysModel),
+          decryptionKeysModel_(decryptionKeysModel) {
     ownKeysView_->setModel(ownKeysModel_);
     importedKeysView_->setModel(&importedKeysModel_);
     connect(&network_, &Net::error, this, &KeyExchangeWidget::networkMessageHandler);
@@ -184,8 +184,20 @@ void KeyExchangeWidget::networkMessageHandler(const QString& msg) {
 void KeyExchangeWidget::newKeysHandler(const QString& b58SendSk, const QString& b58ReceiveSk) {
     QMessageBox::information(this, tr("New common secret pair has been generated."),
                              tr("Send secret key:\n") + b58SendSk + "\n" + tr("Receive secret key:\n") + b58ReceiveSk);
-    encryptionKeys_.push_back(b58SendSk);
-    decryptionKeys_.push_back(b58ReceiveSk);
+    if (encryptionKeysModel_.insertRow(encryptionKeysModel_.rowCount())) {
+        QModelIndex index = encryptionKeysModel_.index(encryptionKeysModel_.rowCount() - 1, 0);
+        encryptionKeysModel_.setData(index, b58SendSk);
+    }
+    else {
+        toStatusBar(statusBar_, tr("Error: can't add new common encryption key!"));
+    }
+    if (decryptionKeysModel_.insertRow(decryptionKeysModel_.rowCount())) {
+        QModelIndex index = decryptionKeysModel_.index(decryptionKeysModel_.rowCount() - 1, 0);
+        decryptionKeysModel_.setData(index, b58ReceiveSk);
+    }
+    else {
+        toStatusBar(statusBar_, tr("Error: can't add new common decryption key!"));
+    }
 }
 } // namespace gui
 } // namespace cscrypto

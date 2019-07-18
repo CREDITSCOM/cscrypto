@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+class QComboBox;
 class QLabel;
 class QLayout;
 class QPushButton;
@@ -56,6 +57,7 @@ private:
     QPushButton* startBtn_;
     QStringListModel& encryptionKeys_;
     QStringListModel& decryptionKeys_;
+    QComboBox* encKeysComboBox_;
 };
 
 } // namespace gui
