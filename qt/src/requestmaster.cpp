@@ -111,6 +111,7 @@ bool RequestMaster::validate(RequestType type, const cscrypto::Bytes& request) {
     if (!dbConnectionEstablished_ && !createDbConnection(connectionName)) {
         return false;
     }
+    dbConnectionEstablished_ = true;
     if (!verifySenderPublicKey(connectionName)) {
         return false;
     }

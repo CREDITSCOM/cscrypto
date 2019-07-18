@@ -6,8 +6,6 @@
 
 #include <common.hpp>
 
-class QSqlDatabase;
-
 namespace cscrypto {
 namespace gui {
 

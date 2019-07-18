@@ -26,6 +26,7 @@ void Client::sendKeyExchangeRequest(QString hostName, quint16 serverPort, const 
 }
 
 void Client::onConnected() {
+    serverReqType_ = RequestMaster::Unknown;
     cscrypto::Bytes request = requestMaster_.form(RequestMaster::RequestType::KeyExchangeQuery);
     socket_->write(reinterpret_cast<char*>(request.data()), qint64(request.size()));
 }
