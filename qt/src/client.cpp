@@ -16,6 +16,7 @@ Client::Client(QObject* parent)
     connect(socket_, &QTcpSocket::readyRead, this, &Client::onReadyRead);
     connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, &Client::socketErrorHandler);
     connect(socket_, &QTcpSocket::connected, this, &Client::onConnected);
+    connect(&requestMaster_, &RequestMaster::newCommonSecretKeyPair, this, &Client::reqMasterKeys);
 }
 
 void Client::sendKeyExchangeRequest(QString hostName, quint16 serverPort, const KeyPair& ownKeys) {
@@ -73,6 +74,9 @@ void Client::socketErrorHandler(QAbstractSocket::SocketError errorType) {
     }
 }
 
+void Client::reqMasterKeys(const QString& b58SendSk, const QString& b58ReceiveSk) {
+    emit newCommonSecretKeyPair(b58SendSk, b58ReceiveSk);
+}
 
 } // namespace gui
 } // namespace cscrypto

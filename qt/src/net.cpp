@@ -15,6 +15,7 @@ const quint16 kServerPort = 12345;
 
 Net::Net(QObject* parent) : QObject(parent), server_(nullptr), client_(new Client(this)) {
     connect(client_, &Client::error, this, &Net::errorHandler);
+    connect(client_, &Client::newCommonSecretKeyPair, this, &Net::newKeysHandler);
 }
 
 void Net::createServer(const KeyPair& serverKeys) {

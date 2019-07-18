@@ -22,11 +22,13 @@ public:
 
 signals:
     void error(const QString& msg);
+    void newCommonSecretKeyPair(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private slots:
     void onReadyRead();
     void onConnected();
     void socketErrorHandler(QAbstractSocket::SocketError error);
+    void reqMasterKeys(const QString& b58SendSk, const QString& b58ReceiveSk);
 
 private:
     QTcpSocket* socket_ = nullptr;

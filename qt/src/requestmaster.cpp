@@ -7,9 +7,20 @@
 #include <common.hpp>
 
 namespace {
-inline void closeDb(QSqlDatabase& db, const QString& connectionName) {
-    db.close();
+inline void closeDb(const QString& connectionName) {
     QSqlDatabase::removeDatabase(connectionName);
+}
+
+bool createDbConnection(QString& connectionName) {
+    int random;
+    cscrypto::fillBufWithRandomBytes(&random, sizeof(random));
+    connectionName = QString::number(random);
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+    db.setDatabaseName("cscrypto_db.sqlite");
+    if (!db.open()) {
+        return false;
+    }
+    return true;
 }
 } // namespace
 
@@ -17,7 +28,8 @@ namespace cscrypto {
 namespace gui {
 
 RequestMaster::RequestMaster(bool validKeys, bool serverSide, const KeyPair& ownKeys, QObject* parent)
-        : QObject(parent), ownKeys_(ownKeys), serverSide_(serverSide), validOwnKeys_(validKeys) {}
+        : QObject(parent), ownKeys_(ownKeys), serverSide_(serverSide),
+          validOwnKeys_(validKeys), dbConnectionEstablished_(false) {}
 
 void RequestMaster::setOwnKeys(const KeyPair& ownKeys) {
     ownKeys_ = ownKeys;
@@ -95,8 +107,15 @@ bool RequestMaster::validate(RequestType type, const cscrypto::Bytes& request) {
     }
 
     std::copy(request.begin(), request.begin() + cscrypto::kPublicKeySize, senderPubKey_.begin());
-    if (!verifySenderPublicKey()) {
+    static QString connectionName;
+    if (!dbConnectionEstablished_ && !createDbConnection(connectionName)) {
         return false;
+    }
+    if (!verifySenderPublicKey(connectionName)) {
+        return false;
+    }
+    if (serverSide_) {
+       closeDb(connectionName);
     }
 
     int curPos = cscrypto::kPublicKeySize;
@@ -126,20 +145,11 @@ bool RequestMaster::checkRequestSignature(const cscrypto::Bytes& msg) {
     return cscrypto::verifySignature(signature_, senderPubKey_, msg.data(), msg.size());
 }
 
-bool RequestMaster::verifySenderPublicKey() {
-    int random;
-    cscrypto::fillBufWithRandomBytes(&random, sizeof(random));
-    QString connectionName = QString::number(random);
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
-    db.setDatabaseName("cscrypto_db.sqlite");
-    if (!db.open()) {
-        return false;
-    }
-
+bool RequestMaster::verifySenderPublicKey(const QString& connectionName) {
+    QSqlDatabase db = QSqlDatabase::database(connectionName);
     QString b58SenderPub = QString::fromUtf8(EncodeBase58(senderPubKey_.data(), senderPubKey_.data() + senderPubKey_.size()).c_str());
     QSqlQuery query(db);
     if (!query.exec("SELECT * FROM publicKeys")) {
-        closeDb(db, connectionName);
         return false;
     }
 
@@ -147,14 +157,11 @@ bool RequestMaster::verifySenderPublicKey() {
     while (query.next()) {
         if (query.value(rec.indexOf("ImportedKey")).toString() == b58SenderPub) {
             if (query.value(rec.indexOf("Trusted")).toString() == "yes") {
-                closeDb(db, connectionName);
                 return true;
             }
-            closeDb(db, connectionName);
             return false;
         }
     }
-    closeDb(db, connectionName);
     return false;
 }
 } // namespace gui

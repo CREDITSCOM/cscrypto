@@ -6,6 +6,8 @@
 
 #include <common.hpp>
 
+class QSqlDatabase;
+
 namespace cscrypto {
 namespace gui {
 
@@ -33,7 +35,7 @@ signals:
     void newCommonSecretKeyPair(QString b58SendSk, QString b58ReceiveSk);
 
 private:
-    bool verifySenderPublicKey();
+    bool verifySenderPublicKey(const QString& connectionName);
     bool checkRequestSignature(const cscrypto::Bytes&);
 
     void formCommonKeys();
@@ -45,6 +47,7 @@ private:
     KeyPair ownKeys_;
     bool serverSide_;
     bool validOwnKeys_;
+    bool dbConnectionEstablished_;
 };
 } // namespace gui
 } // namespace cscrypto
