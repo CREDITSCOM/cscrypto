@@ -31,7 +31,7 @@ signals:
 
 private:
     void tuneLayouts();
-    void fillModeLayout(QLayout*);
+    void fillModeLayout(QVBoxLayout*);
     void fillMiddleLayout(QVBoxLayout*);
     void fillLowLayout(QLayout*);
     void fillPswdLayout(QLayout*);

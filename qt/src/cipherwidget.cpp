@@ -1,5 +1,6 @@
 #include "cipherwidget.hpp"
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QFileDialog>
 #include <QLabel>
@@ -37,7 +38,7 @@ CipherWidget::CipherWidget(QStringListModel& encryptionKeys,
 
 void CipherWidget::tuneLayouts() {
     QVBoxLayout* mainLayout = new QVBoxLayout;
-    QHBoxLayout* modeLayout = new QHBoxLayout;
+    QVBoxLayout* modeLayout = new QVBoxLayout;
     QVBoxLayout* middleLayout = new QVBoxLayout;
     QVBoxLayout* pswdLayout = new QVBoxLayout;
     QHBoxLayout* lowLayout = new QHBoxLayout;
@@ -55,12 +56,22 @@ void CipherWidget::tuneLayouts() {
     setLayout(mainLayout);
 }
 
-void CipherWidget::fillModeLayout(QLayout* l) {
-    l->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+void CipherWidget::fillModeLayout(QVBoxLayout* l) {
+    QHBoxLayout* modeSelectionLayout = new QHBoxLayout;
+    modeSelectionLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     QRadioButton* encBtn = new QRadioButton(tr("Encryption"), this);
     QRadioButton* decBtn = new QRadioButton(tr("Decryption"), this);
-    l->addWidget(encBtn);
-    l->addWidget(decBtn);
+    modeSelectionLayout->addWidget(encBtn);
+    modeSelectionLayout->addWidget(decBtn);
+
+    QHBoxLayout* useKeysLayout = new QHBoxLayout;
+    useKeysLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    QCheckBox* useKeysCheckBox = new QCheckBox(tr("Use available keys"), this);
+    useKeysLayout->addWidget(useKeysCheckBox);
+    useKeysCheckBox->setEnabled(false);
+
+    l->addLayout(modeSelectionLayout);
+    l->addLayout(useKeysLayout);
 
     connect(encBtn, &QRadioButton::clicked, this, &CipherWidget::activateEncryptionMode);
     connect(decBtn, &QRadioButton::clicked, this, &CipherWidget::activateDecryptionMode);
