@@ -83,12 +83,6 @@ void CipherWidget::fillMiddleLayout(QVBoxLayout* l) {
     l->addLayout(l2);
     l->addWidget(targetFileLbl_);
 
-    QLabel* encLbl = new QLabel(tr("Available encryption keys:"), this);
-    l->addWidget(encLbl);
-    encKeysComboBox_ = new QComboBox(this);
-    l->addWidget(encKeysComboBox_);
-    encKeysComboBox_->setModel(&encryptionKeys_);
-
     connect(loadSrcBtn, &QPushButton::clicked, this, &CipherWidget::getSrcFileName);
     connect(loadTrgBtn, &QPushButton::clicked, this, &CipherWidget::getTrgFileName);
 }
@@ -102,6 +96,18 @@ void CipherWidget::fillLowLayout(QLayout* l) {
 }
 
 void CipherWidget::fillPswdLayout(QLayout* l) {
+    QLabel* encLbl = new QLabel(tr("Available encryption keys:"), this);
+    l->addWidget(encLbl);
+    encKeysComboBox_ = new QComboBox(this);
+    l->addWidget(encKeysComboBox_);
+    encKeysComboBox_->setModel(&encryptionKeys_);
+
+    QLabel* decLbl = new QLabel(tr("Available decryption keys:"), this);
+    l->addWidget(decLbl);
+    decKeysComboBox_ = new QComboBox(this);
+    l->addWidget(decKeysComboBox_);
+    decKeysComboBox_->setModel(&decryptionKeys_);
+
     QLabel* lbl = new QLabel(tr("Password:"), this);
     l->addWidget(lbl);
     pswdLineEdit_ = new PasswordLineEdit(this);

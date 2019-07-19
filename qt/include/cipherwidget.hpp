@@ -58,6 +58,7 @@ private:
     QStringListModel& encryptionKeys_;
     QStringListModel& decryptionKeys_;
     QComboBox* encKeysComboBox_;
+    QComboBox* decKeysComboBox_;
 };
 
 } // namespace gui
