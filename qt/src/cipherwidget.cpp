@@ -1,5 +1,7 @@
 #include "cipherwidget.hpp"
 
+#include <algorithm>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QFileDialog>
@@ -131,16 +133,35 @@ void CipherWidget::fillPswdLayout(QLayout* l) {
 }
 
 void CipherWidget::start() {
-    auto pswd = pswdLineEdit_->text().toStdString();
-    if (pswd.empty()) {
-        toStatusBar(statusBar_, tr("Password empty! Fill it to encrypt / decrypt."));
-        return;
+    cscrypto::cipher::CipherKey cipherKey;
+    if (useKeysCheckBox_->checkState() == Qt::Unchecked) {
+       auto pswd = pswdLineEdit_->text().toStdString();
+       if (pswd.empty()) {
+            toStatusBar(statusBar_, tr("Password empty! Fill it to encrypt / decrypt."));
+            return;
+        }
+        if (pswd.size() < kMinPswdSize) {
+            toStatusBar(statusBar_, tr("Password is too short!"));
+            return;
+        }
+        cipherKey = cscrypto::cipher::getCipherKeyFromPassword(pswd.c_str(), pswd.size());
     }
-    if (pswd.size() < kMinPswdSize) {
-        toStatusBar(statusBar_, tr("Password is too short!"));
-        return;
+    else {
+        std::string b58Key;
+        if (encryptionMode_) {
+            b58Key = encKeysComboBox_->currentText().toStdString();
+        }
+        else {
+            b58Key = decKeysComboBox_->currentText().toStdString();
+        }
+        cscrypto::Bytes keyBytes;
+        if (!DecodeBase58(b58Key, keyBytes)) {
+            toStatusBar(statusBar_, tr("Invalid keys!"));
+            return;
+        }
+        std::copy(keyBytes.begin(), keyBytes.end(), cipherKey.data());
     }
-    auto cipherKey = cscrypto::cipher::getCipherKeyFromPassword(pswd.c_str(), pswd.size());
+
     if (encryptionMode_ && cscrypto::cipher::encryptFile(targetFileLbl_->text().toStdString().c_str(),
                                                          sourceFileLbl_->text().toStdString().c_str(),
                                                          cipherKey)) {
