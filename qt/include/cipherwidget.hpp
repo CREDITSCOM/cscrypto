@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+class QCheckBox;
 class QComboBox;
 class QLabel;
 class QLayout;
@@ -42,6 +43,9 @@ private:
     void getSrcFileName();
     void getTrgFileName();
 
+    void updateUseKeysCheckBox();
+    void analyzeUseKeysStatus(int);
+
     void start();
 
     QStatusBar& statusBar_;
@@ -59,6 +63,9 @@ private:
     QStringListModel& decryptionKeys_;
     QComboBox* encKeysComboBox_;
     QComboBox* decKeysComboBox_;
+    QCheckBox* useKeysCheckBox_;
+    QLabel* encLbl_;
+    QLabel* decLbl_;
 };
 
 } // namespace gui

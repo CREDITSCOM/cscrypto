@@ -31,9 +31,12 @@ CipherWidget::CipherWidget(QStringListModel& encryptionKeys,
           decryptionMode_(false),
           startBtn_(new QPushButton(tr("Start"), this)),
           encryptionKeys_(encryptionKeys),
-          decryptionKeys_(decryptionKeys) {
+          decryptionKeys_(decryptionKeys),
+          encKeysComboBox_(new QComboBox(this)),
+          decKeysComboBox_(new QComboBox(this)) {
     tuneLayouts();
     startBtn_->setEnabled(false);
+    connect(&encryptionKeys_, &QStringListModel::dataChanged, this, &CipherWidget::updateUseKeysCheckBox);
 }
 
 void CipherWidget::tuneLayouts() {
@@ -66,9 +69,10 @@ void CipherWidget::fillModeLayout(QVBoxLayout* l) {
 
     QHBoxLayout* useKeysLayout = new QHBoxLayout;
     useKeysLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    QCheckBox* useKeysCheckBox = new QCheckBox(tr("Use available keys"), this);
-    useKeysLayout->addWidget(useKeysCheckBox);
-    useKeysCheckBox->setEnabled(false);
+    useKeysCheckBox_ = new QCheckBox(tr("Use available keys"), this);
+    useKeysLayout->addWidget(useKeysCheckBox_);
+    useKeysCheckBox_->setEnabled(false);
+    connect(useKeysCheckBox_, &QCheckBox::stateChanged, this, &CipherWidget::analyzeUseKeysStatus);
 
     l->addLayout(modeSelectionLayout);
     l->addLayout(useKeysLayout);
@@ -107,21 +111,22 @@ void CipherWidget::fillLowLayout(QLayout* l) {
 }
 
 void CipherWidget::fillPswdLayout(QLayout* l) {
-    QLabel* encLbl = new QLabel(tr("Available encryption keys:"), this);
-    l->addWidget(encLbl);
-    encKeysComboBox_ = new QComboBox(this);
+    encLbl_ = new QLabel(tr("Available encryption keys:"), this);
+    l->addWidget(encLbl_);
     l->addWidget(encKeysComboBox_);
     encKeysComboBox_->setModel(&encryptionKeys_);
+    encKeysComboBox_->hide();
+    encLbl_->hide();
 
-    QLabel* decLbl = new QLabel(tr("Available decryption keys:"), this);
-    l->addWidget(decLbl);
-    decKeysComboBox_ = new QComboBox(this);
+    decLbl_ = new QLabel(tr("Available decryption keys:"), this);
+    l->addWidget(decLbl_);
     l->addWidget(decKeysComboBox_);
     decKeysComboBox_->setModel(&decryptionKeys_);
+    decKeysComboBox_->hide();
+    decLbl_->hide();
 
-    QLabel* lbl = new QLabel(tr("Password:"), this);
-    l->addWidget(lbl);
     pswdLineEdit_ = new PasswordLineEdit(this);
+    pswdLineEdit_->setPlaceholderText(tr("Type password here"));
     l->addWidget(pswdLineEdit_);
 }
 
@@ -187,6 +192,7 @@ void CipherWidget::activateEncryptionMode() {
     toStatusBar(statusBar_, tr("Encryption mode activated."));
     encryptionMode_ = true;
     decryptionMode_ = false;
+    analyzeUseKeysStatus(useKeysCheckBox_->checkState());
     if (targetFileLoaded_ && sourceFileLoaded_) emit canStart(true);
 }
 
@@ -196,7 +202,48 @@ void CipherWidget::activateDecryptionMode() {
     toStatusBar(statusBar_, tr("Decryption mode activated."));
     decryptionMode_ = true;
     encryptionMode_ = false;
+    analyzeUseKeysStatus(useKeysCheckBox_->checkState());
     if (targetFileLoaded_ && sourceFileLoaded_) emit canStart(true);
+}
+
+void CipherWidget::updateUseKeysCheckBox() {
+    if (encryptionKeys_.rowCount() > 0) {
+        useKeysCheckBox_->setEnabled(true);
+    }
+    else {
+        useKeysCheckBox_->setEnabled(false);
+        useKeysCheckBox_->setCheckState(Qt::Unchecked);
+    }
+}
+
+void CipherWidget::analyzeUseKeysStatus(int status) {
+    switch (status) {
+        case Qt::Checked :
+            pswdLineEdit_->hide();
+            if (encryptionMode_) {
+                encKeysComboBox_->show();
+                decKeysComboBox_->hide();
+                encLbl_->show();
+                decLbl_->hide();
+            }
+            else if (decryptionMode_) {
+                encKeysComboBox_->hide();
+                decKeysComboBox_->show();
+                encLbl_->hide();
+                decLbl_->show();
+            }
+            else {
+                toStatusBar(statusBar_, tr("Check mode to start encryption / decryption!"));
+            }
+            break;
+        default:
+            pswdLineEdit_->show();
+            encKeysComboBox_->hide();
+            decKeysComboBox_->hide();
+            encLbl_->hide();
+            decLbl_->hide();
+            break;
+    }
 }
 
 } // namespace gui
