@@ -33,11 +33,10 @@ if(WIN32)
 
   set(lb_lib_folder .)
 else()
-
   if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(libsodium_lib_dir ${libsodium_dir}/Build/Debug/x64/)
+    set(libsodium_lib_dir ${CMAKE_BINARY_DIR}/libsodium/Build/Debug/x64/)
   else()
-    set(libsodium_lib_dir ${libsodium_dir}/Build/Release/x64/)
+    set(libsodium_lib_dir ${CMAKE_BINARY_DIR}/libsodium/Build/Release/x64/)
   endif()
 
   if(EXISTS ${libsodium_lib_dir}/lib/libsodium${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -56,6 +55,10 @@ else()
   endif()
     
   set(lb_lib_folder lib)
+endif()
+
+if(NOT WIN32)
+  set(libsodium_dir "${CMAKE_BINARY_DIR}/libsodium")
 endif()
 
 add_library(libsodium STATIC IMPORTED GLOBAL)
