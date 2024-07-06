@@ -38,7 +38,7 @@ To build with tests add the following argument when run cmake:
  cmake -DCMAKE_BUILD_TYPE=Release -A x64 ..
  cmake --build . --target ALL_BUILD --config Release
 ```
-
+If Libsodium issues arise please try to open MSVS project and build for x64 located : cscrypto\third-party\libsodium\builds\msvc 
 ### Unix:
 ```sh
  $ git clone https://github.com/CREDITSCOM/cscrypto.git
